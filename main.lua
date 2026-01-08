@@ -1,15 +1,11 @@
 -- JriikTools V1
--- RESET MODE - STEP 4 (Multiple Toggle + Button)
+-- STEP 5 - TAB SYSTEM MANUAL (HP SAFE)
 
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
 local StarterGui = game:GetService("StarterGui")
 
 local player = Players.LocalPlayer
-local gui = Instance.new("ScreenGui")
-gui.Name = "JriikTools_Reset"
-gui.ResetOnSpawn = false
-gui.Parent = player:WaitForChild("PlayerGui")
 
 -- Notification
 local function notify(text)
@@ -23,45 +19,49 @@ local function notify(text)
 	end)
 end
 
+-- ScreenGui
+local gui = Instance.new("ScreenGui")
+gui.Name = "JriikTools_V1"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
 -- Main Frame
-local frame = Instance.new("Frame")
-frame.Parent = gui
-frame.Size = UDim2.new(0, 300, 0, 260)
-frame.Position = UDim2.new(0.5, -150, 0.5, -130)
-frame.BackgroundColor3 = Color3.fromRGB(32, 32, 32)
+local main = Instance.new("Frame", gui)
+main.Size = UDim2.new(0, 330, 0, 320)
+main.Position = UDim2.new(0.5, -165, 0.5, -160)
+main.BackgroundColor3 = Color3.fromRGB(32,32,32)
 
--- Title (Drag)
-local title = Instance.new("TextLabel")
-title.Parent = frame
-title.Size = UDim2.new(1, 0, 0, 40)
-title.BackgroundTransparency = 1
-title.Text = "JriikTools V1"
-title.TextColor3 = Color3.fromRGB(255,255,255)
-title.TextScaled = true
+-- Header (Drag)
+local header = Instance.new("TextLabel", main)
+header.Size = UDim2.new(1, 0, 0, 40)
+header.BackgroundTransparency = 1
+header.Text = "JriikTools V1"
+header.TextColor3 = Color3.fromRGB(255,255,255)
+header.TextScaled = true
 
--- Drag Logic
+-- Drag logic
 local dragging, dragStart, startPos
-title.InputBegan:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.Touch
-	or input.UserInputType == Enum.UserInputType.MouseButton1 then
+header.InputBegan:Connect(function(i)
+	if i.UserInputType == Enum.UserInputType.Touch
+	or i.UserInputType == Enum.UserInputType.MouseButton1 then
 		dragging = true
-		dragStart = input.Position
-		startPos = frame.Position
+		dragStart = i.Position
+		startPos = main.Position
 	end
 end)
-title.InputEnded:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.Touch
-	or input.UserInputType == Enum.UserInputType.MouseButton1 then
+header.InputEnded:Connect(function(i)
+	if i.UserInputType == Enum.UserInputType.Touch
+	or i.UserInputType == Enum.UserInputType.MouseButton1 then
 		dragging = false
 	end
 end)
-UIS.InputChanged:Connect(function(input)
+UIS.InputChanged:Connect(function(i)
 	if dragging and (
-		input.UserInputType == Enum.UserInputType.Touch
-		or input.UserInputType == Enum.UserInputType.MouseMovement
+		i.UserInputType == Enum.UserInputType.Touch
+		or i.UserInputType == Enum.UserInputType.MouseMovement
 	) then
-		local delta = input.Position - dragStart
-		frame.Position = UDim2.new(
+		local delta = i.Position - dragStart
+		main.Position = UDim2.new(
 			startPos.X.Scale,
 			startPos.X.Offset + delta.X,
 			startPos.Y.Scale,
@@ -70,75 +70,86 @@ UIS.InputChanged:Connect(function(input)
 	end
 end)
 
--- Container
-local container = Instance.new("Frame", frame)
-container.Position = UDim2.new(0, 0, 0, 50)
-container.Size = UDim2.new(1, 0, 1, -50)
-container.BackgroundTransparency = 1
+-- Tab Bar
+local tabBar = Instance.new("Frame", main)
+tabBar.Position = UDim2.new(0, 0, 0, 40)
+tabBar.Size = UDim2.new(1, 0, 0, 36)
+tabBar.BackgroundColor3 = Color3.fromRGB(25,25,25)
 
-local layout = Instance.new("UIListLayout", container)
-layout.Padding = UDim.new(0, 10)
+local tabLayout = Instance.new("UIListLayout", tabBar)
+tabLayout.FillDirection = Enum.FillDirection.Horizontal
+tabLayout.Padding = UDim.new(0, 4)
 
--- Toggle Creator
-local function createToggle(text)
-	local holder = Instance.new("Frame", container)
-	holder.Size = UDim2.new(1, -20, 0, 34)
-	holder.BackgroundTransparency = 1
+-- Content Holder
+local pages = Instance.new("Frame", main)
+pages.Position = UDim2.new(0, 0, 0, 76)
+pages.Size = UDim2.new(1, 0, 1, -76)
+pages.BackgroundTransparency = 1
 
-	local label = Instance.new("TextLabel", holder)
-	label.Size = UDim2.new(1, -60, 1, 0)
-	label.BackgroundTransparency = 1
-	label.Text = text
-	label.TextColor3 = Color3.fromRGB(230,230,230)
-	label.TextXAlignment = Enum.TextXAlignment.Left
-	label.TextScaled = false
-	label.TextSize = 16
+-- Create Page
+local pageList = {}
 
-	local btn = Instance.new("TextButton", holder)
-	btn.Size = UDim2.new(0, 44, 0, 22)
-	btn.Position = UDim2.new(1, -44, 0.5, -11)
-	btn.Text = ""
-	btn.BackgroundColor3 = Color3.fromRGB(70,70,70)
+local function createPage(name)
+	local page = Instance.new("Frame", pages)
+	page.Size = UDim2.new(1, 0, 1, 0)
+	page.Visible = false
+	page.BackgroundTransparency = 1
+	pageList[name] = page
+	return page
+end
 
-	local circle = Instance.new("Frame", btn)
-	circle.Size = UDim2.new(0, 18, 0, 18)
-	circle.Position = UDim2.new(0, 2, 0.5, -9)
-	circle.BackgroundColor3 = Color3.fromRGB(230,230,230)
-
-	local state = false
+-- Create Tab Button
+local function createTab(name)
+	local btn = Instance.new("TextButton", tabBar)
+	btn.Size = UDim2.new(0, 100, 1, 0)
+	btn.Text = name
+	btn.TextColor3 = Color3.fromRGB(220,220,220)
+	btn.BackgroundColor3 = Color3.fromRGB(45,45,45)
+	btn.TextSize = 14
 
 	btn.MouseButton1Click:Connect(function()
-		state = not state
-		if state then
-			btn.BackgroundColor3 = Color3.fromRGB(90,150,255)
-			circle.Position = UDim2.new(1, -20, 0.5, -9)
-			notify(text.." : ON")
-		else
-			btn.BackgroundColor3 = Color3.fromRGB(70,70,70)
-			circle.Position = UDim2.new(0, 2, 0.5, -9)
-			notify(text.." : OFF")
+		for _,p in pairs(pageList) do
+			p.Visible = false
 		end
+		pageList[name].Visible = true
+		notify("Tab : "..name)
 	end)
 end
 
+-- Pages
+local Info = createPage("Info")
+local Fishing = createPage("Fishing")
+local Shop = createPage("Shop")
+local AutoQuest = createPage("AutoQuest")
+local Teleport = createPage("Teleport")
+local Misc = createPage("Misc")
 
--- Button Creator
-local function createButton(text)
-	local btn = Instance.new("TextButton", container)
-	btn.Size = UDim2.new(1, -20, 0, 36)
-	btn.Text = text
-	btn.BackgroundColor3 = Color3.fromRGB(60,60,60)
-	btn.TextColor3 = Color3.fromRGB(255,255,255)
+-- Tabs
+createTab("Info")
+createTab("Fishing")
+createTab("Shop")
+createTab("AutoQuest")
+createTab("Teleport")
+createTab("Misc")
 
-	btn.MouseButton1Click:Connect(function()
-		notify(text.." clicked")
-	end)
+-- Default Page
+pageList["Info"].Visible = true
+
+-- Example content
+local function label(parent, text)
+	local l = Instance.new("TextLabel", parent)
+	l.Size = UDim2.new(1, -20, 0, 30)
+	l.Position = UDim2.new(0, 10, 0, 10)
+	l.BackgroundTransparency = 1
+	l.Text = text
+	l.TextColor3 = Color3.fromRGB(255,255,255)
+	l.TextXAlignment = Enum.TextXAlignment.Left
+	l.TextSize = 16
 end
 
--- Create UI
-createToggle("Toggle 1")
-createToggle("Toggle 2")
-createToggle("Toggle 3")
-createButton("Example Button")
-
-
+label(Info, "Welcome to JriikTools V1")
+label(Fishing, "Fishing features here")
+label(Shop, "Shop features here")
+label(AutoQuest, "AutoQuest features here")
+label(Teleport, "Teleport features here")
+label(Misc, "Misc features here")
