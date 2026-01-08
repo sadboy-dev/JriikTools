@@ -1,11 +1,12 @@
 -- JriikTools V1
--- STEP 5 - TAB SYSTEM MANUAL (HP SAFE)
+-- STEP 6 - AUTO SIZE (HP FRIENDLY)
 
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
 local StarterGui = game:GetService("StarterGui")
 
 local player = Players.LocalPlayer
+local camera = workspace.CurrentCamera
 
 -- Notification
 local function notify(text)
@@ -25,15 +26,22 @@ gui.Name = "JriikTools_V1"
 gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 
+-- === AUTO SIZE CALCULATION ===
+local screenSize = camera.ViewportSize
+local scale = math.clamp(screenSize.X / 800, 0.75, 1)
+
+local WIDTH = math.floor(330 * scale)
+local HEIGHT = math.floor(320 * scale)
+
 -- Main Frame
 local main = Instance.new("Frame", gui)
-main.Size = UDim2.new(0, 330, 0, 320)
-main.Position = UDim2.new(0.5, -165, 0.5, -160)
+main.Size = UDim2.new(0, WIDTH, 0, HEIGHT)
+main.Position = UDim2.new(0.5, -WIDTH / 2, 0.5, -HEIGHT / 2)
 main.BackgroundColor3 = Color3.fromRGB(32,32,32)
 
 -- Header (Drag)
 local header = Instance.new("TextLabel", main)
-header.Size = UDim2.new(1, 0, 0, 40)
+header.Size = UDim2.new(1, 0, 0, math.floor(40 * scale))
 header.BackgroundTransparency = 1
 header.Text = "JriikTools V1"
 header.TextColor3 = Color3.fromRGB(255,255,255)
@@ -71,22 +79,23 @@ UIS.InputChanged:Connect(function(i)
 end)
 
 -- Tab Bar
+local tabBarHeight = math.floor(36 * scale)
 local tabBar = Instance.new("Frame", main)
-tabBar.Position = UDim2.new(0, 0, 0, 40)
-tabBar.Size = UDim2.new(1, 0, 0, 36)
+tabBar.Position = UDim2.new(0, 0, 0, header.Size.Y.Offset)
+tabBar.Size = UDim2.new(1, 0, 0, tabBarHeight)
 tabBar.BackgroundColor3 = Color3.fromRGB(25,25,25)
 
 local tabLayout = Instance.new("UIListLayout", tabBar)
 tabLayout.FillDirection = Enum.FillDirection.Horizontal
-tabLayout.Padding = UDim.new(0, 4)
+tabLayout.Padding = UDim.new(0, math.floor(4 * scale))
 
--- Content Holder
+-- Pages holder
 local pages = Instance.new("Frame", main)
-pages.Position = UDim2.new(0, 0, 0, 76)
-pages.Size = UDim2.new(1, 0, 1, -76)
+pages.Position = UDim2.new(0, 0, 0, header.Size.Y.Offset + tabBarHeight)
+pages.Size = UDim2.new(1, 0, 1, -(header.Size.Y.Offset + tabBarHeight))
 pages.BackgroundTransparency = 1
 
--- Create Page
+-- Pages
 local pageList = {}
 
 local function createPage(name)
@@ -98,14 +107,14 @@ local function createPage(name)
 	return page
 end
 
--- Create Tab Button
+-- Tabs
 local function createTab(name)
 	local btn = Instance.new("TextButton", tabBar)
-	btn.Size = UDim2.new(0, 100, 1, 0)
+	btn.Size = UDim2.new(0, math.floor(100 * scale), 1, 0)
 	btn.Text = name
 	btn.TextColor3 = Color3.fromRGB(220,220,220)
 	btn.BackgroundColor3 = Color3.fromRGB(45,45,45)
-	btn.TextSize = 14
+	btn.TextScaled = true
 
 	btn.MouseButton1Click:Connect(function()
 		for _,p in pairs(pageList) do
@@ -116,15 +125,15 @@ local function createTab(name)
 	end)
 end
 
--- Pages
-local Info = createPage("Info")
-local Fishing = createPage("Fishing")
-local Shop = createPage("Shop")
-local AutoQuest = createPage("AutoQuest")
-local Teleport = createPage("Teleport")
-local Misc = createPage("Misc")
+-- Create pages
+createPage("Info")
+createPage("Fishing")
+createPage("Shop")
+createPage("AutoQuest")
+createPage("Teleport")
+createPage("Misc")
 
--- Tabs
+-- Create tabs
 createTab("Info")
 createTab("Fishing")
 createTab("Shop")
@@ -132,24 +141,24 @@ createTab("AutoQuest")
 createTab("Teleport")
 createTab("Misc")
 
--- Default Page
+-- Default
 pageList["Info"].Visible = true
 
--- Example content
+-- Content label helper
 local function label(parent, text)
 	local l = Instance.new("TextLabel", parent)
-	l.Size = UDim2.new(1, -20, 0, 30)
+	l.Size = UDim2.new(1, -20, 0, math.floor(30 * scale))
 	l.Position = UDim2.new(0, 10, 0, 10)
 	l.BackgroundTransparency = 1
 	l.Text = text
 	l.TextColor3 = Color3.fromRGB(255,255,255)
 	l.TextXAlignment = Enum.TextXAlignment.Left
-	l.TextSize = 16
+	l.TextScaled = true
 end
 
-label(Info, "Welcome to JriikTools V1")
-label(Fishing, "Fishing features here")
-label(Shop, "Shop features here")
-label(AutoQuest, "AutoQuest features here")
-label(Teleport, "Teleport features here")
-label(Misc, "Misc features here")
+label(pageList.Info, "Welcome to JriikTools V1")
+label(pageList.Fishing, "Fishing features here")
+label(pageList.Shop, "Shop features here")
+label(pageList.AutoQuest, "AutoQuest features here")
+label(pageList.Teleport, "Teleport features here")
+label(pageList.Misc, "Misc features here")
