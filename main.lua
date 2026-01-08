@@ -45,8 +45,10 @@ local HEIGHT = math.floor(320 * scale)
 -- Main Frame
 local main = Instance.new("Frame", gui)
 main.Size = UDim2.new(0, WIDTH, 0, HEIGHT)
-main.Position = UDim2.new(0.5, -WIDTH / 2, 0.5, -HEIGHT / 2)
+main.Position = UDim2.new(0.5, 0, 0.5, 0)
+main.AnchorPoint = Vector2.new(0.5, 0.5)
 main.BackgroundColor3 = Color3.fromRGB(32,32,32)
+main.BorderSizePixel = 0
 
 -- Header (Drag)
 local header = Instance.new("TextLabel", main)
