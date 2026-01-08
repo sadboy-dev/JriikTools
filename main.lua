@@ -1,5 +1,5 @@
 -- JriikTools V1
--- RESET MODE - STEP 3 (Toggle + Notification)
+-- RESET MODE - STEP 4 (Multiple Toggle + Button)
 
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
@@ -11,14 +11,26 @@ gui.Name = "JriikTools_Reset"
 gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 
+-- Notification
+local function notify(text)
+	pcall(function()
+		StarterGui:SetCore("SendNotification", {
+			Title = "Console",
+			Text = text,
+			Icon = "rbxthumb://type=Asset&id=5107182114&w=150&h=150",
+			Duration = 5
+		})
+	end)
+end
+
 -- Main Frame
 local frame = Instance.new("Frame")
 frame.Parent = gui
-frame.Size = UDim2.new(0, 280, 0, 180)
-frame.Position = UDim2.new(0.5, -140, 0.5, -90)
+frame.Size = UDim2.new(0, 300, 0, 260)
+frame.Position = UDim2.new(0.5, -150, 0.5, -130)
 frame.BackgroundColor3 = Color3.fromRGB(32, 32, 32)
 
--- Title (Drag Area)
+-- Title (Drag)
 local title = Instance.new("TextLabel")
 title.Parent = frame
 title.Size = UDim2.new(1, 0, 0, 40)
@@ -58,58 +70,70 @@ UIS.InputChanged:Connect(function(input)
 	end
 end)
 
--- Toggle Label
-local toggleLabel = Instance.new("TextLabel")
-toggleLabel.Parent = frame
-toggleLabel.Position = UDim2.new(0, 12, 0, 70)
-toggleLabel.Size = UDim2.new(1, -80, 0, 30)
-toggleLabel.BackgroundTransparency = 1
-toggleLabel.Text = "Example Toggle"
-toggleLabel.TextColor3 = Color3.fromRGB(230,230,230)
-toggleLabel.TextSize = 16
-toggleLabel.TextXAlignment = Enum.TextXAlignment.Left
+-- Container
+local container = Instance.new("Frame", frame)
+container.Position = UDim2.new(0, 0, 0, 50)
+container.Size = UDim2.new(1, 0, 1, -50)
+container.BackgroundTransparency = 1
 
--- Toggle Button
-local toggleBtn = Instance.new("TextButton")
-toggleBtn.Parent = frame
-toggleBtn.Position = UDim2.new(1, -56, 0, 74)
-toggleBtn.Size = UDim2.new(0, 44, 0, 22)
-toggleBtn.Text = ""
-toggleBtn.BackgroundColor3 = Color3.fromRGB(70,70,70)
+local layout = Instance.new("UIListLayout", container)
+layout.Padding = UDim.new(0, 10)
 
--- Toggle Circle
-local circle = Instance.new("Frame")
-circle.Parent = toggleBtn
-circle.Size = UDim2.new(0, 18, 0, 18)
-circle.Position = UDim2.new(0, 2, 0.5, -9)
-circle.BackgroundColor3 = Color3.fromRGB(230,230,230)
+-- Toggle Creator
+local function createToggle(text)
+	local holder = Instance.new("Frame", container)
+	holder.Size = UDim2.new(1, -20, 0, 34)
+	holder.BackgroundTransparency = 1
 
--- State
-local toggleState = false
+	local label = Instance.new("TextLabel", holder)
+	label.Size = UDim2.new(1, -60, 1, 0)
+	label.BackgroundTransparency = 1
+	label.Text = text
+	label.TextColor3 = Color3.fromRGB(230,230,230)
+	label.TextXAlignment = Left
 
--- Notification Function
-local function notify(text)
-	pcall(function()
-		StarterGui:SetCore("SendNotification", {
-			Title = "Console",
-			Text = text,
-			Icon = "rbxthumb://type=Asset&id=5107182114&w=150&h=150",
-			Duration = 5
-		})
+	local btn = Instance.new("TextButton", holder)
+	btn.Size = UDim2.new(0, 44, 0, 22)
+	btn.Position = UDim2.new(1, -44, 0.5, -11)
+	btn.Text = ""
+	btn.BackgroundColor3 = Color3.fromRGB(70,70,70)
+
+	local circle = Instance.new("Frame", btn)
+	circle.Size = UDim2.new(0, 18, 0, 18)
+	circle.Position = UDim2.new(0, 2, 0.5, -9)
+	circle.BackgroundColor3 = Color3.fromRGB(230,230,230)
+
+	local state = false
+
+	btn.MouseButton1Click:Connect(function()
+		state = not state
+		if state then
+			btn.BackgroundColor3 = Color3.fromRGB(90,150,255)
+			circle.Position = UDim2.new(1, -20, 0.5, -9)
+			notify(text.." : ON")
+		else
+			btn.BackgroundColor3 = Color3.fromRGB(70,70,70)
+			circle.Position = UDim2.new(0, 2, 0.5, -9)
+			notify(text.." : OFF")
+		end
 	end)
 end
 
--- Toggle Logic
-toggleBtn.MouseButton1Click:Connect(function()
-	toggleState = not toggleState
+-- Button Creator
+local function createButton(text)
+	local btn = Instance.new("TextButton", container)
+	btn.Size = UDim2.new(1, -20, 0, 36)
+	btn.Text = text
+	btn.BackgroundColor3 = Color3.fromRGB(60,60,60)
+	btn.TextColor3 = Color3.fromRGB(255,255,255)
 
-	if toggleState then
-		toggleBtn.BackgroundColor3 = Color3.fromRGB(90, 150, 255)
-		circle.Position = UDim2.new(1, -20, 0.5, -9)
-		notify("Example Toggle : ON")
-	else
-		toggleBtn.BackgroundColor3 = Color3.fromRGB(70,70,70)
-		circle.Position = UDim2.new(0, 2, 0.5, -9)
-		notify("Example Toggle : OFF")
-	end
-end)
+	btn.MouseButton1Click:Connect(function()
+		notify(text.." clicked")
+	end)
+end
+
+-- Create UI
+createToggle("Toggle 1")
+createToggle("Toggle 2")
+createToggle("Toggle 3")
+createButton("Example Button")
