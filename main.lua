@@ -9,8 +9,6 @@ local StarterGui = game:GetService("StarterGui")
 local player = Players.LocalPlayer
 local camera = workspace.CurrentCamera
 local viewport = camera.ViewportSize
-local UserInputService = game:GetService("UserInputService")
-local TweenService = game:GetService("TweenService")
 
 -- Notification
 local function notify(text)
@@ -26,41 +24,26 @@ end
 
 notify("JriikTools V1 Loaded")
 
-
--- mobile check
+-- === DEVICE DETECTION ===
 local function isMobileDevice()
-    return UserInputService.TouchEnabled
-        and not UserInputService.KeyboardEnabled
-        and not UserInputService.MouseEnabled
+	return UserInputService.TouchEnabled
+		and not UserInputService.KeyboardEnabled
+		and not UserInputService.MouseEnabled
 end
 
 local isMobile = isMobileDevice()
 
--- safe size (initial only)
+-- === SAFE AUTO SIZE (REQUESTED) ===
 local function safeSize(pxWidth, pxHeight)
-    local scaleX = pxWidth / viewport.X
-    local scaleY = pxHeight / viewport.Y
+	local scaleX = pxWidth / viewport.X
+	local scaleY = pxHeight / viewport.Y
 
-    if isMobile then
-        if scaleX > 0.5 then scaleX = 0.5 end
-        if scaleY > 0.3 then scaleY = 0.3 end
-    end
+	if isMobile then
+		scaleX = math.clamp(scaleX, 0, 0.5)
+		scaleY = math.clamp(scaleY, 0, 0.35)
+	end
 
-    return UDim2.new(scaleX, 0, scaleY, 0)
-end
-
--- apply once
-main.Size = safeSize(470, 270)
-
--- draggable
-MakeDraggable(header, main)
-
--- optional: disable resize on mobile
-if isMobile then
-    local resize = main:FindFirstChild("changesizeobject")
-    if resize then
-        resize:Destroy()
-    end
+	return UDim2.new(scaleX, pxWidth * 0.1, scaleY, pxHeight * 0.1)
 end
 
 -- ScreenGui
