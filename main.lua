@@ -1,13 +1,14 @@
 --// JriikTools V1
---// Base UI - Stable for Mobile (Delta)
+--// Final Stable UI + Safe Auto Size (Mobile Friendly)
 
 -- Services
 local Players = game:GetService("Players")
-local UIS = game:GetService("UserInputService")
+local UserInputService = game:GetService("UserInputService")
 local StarterGui = game:GetService("StarterGui")
 
 local player = Players.LocalPlayer
 local camera = workspace.CurrentCamera
+local viewport = camera.ViewportSize
 
 -- Notification
 local function notify(text)
@@ -23,41 +24,47 @@ end
 
 notify("JriikTools V1 Loaded")
 
+-- === DEVICE DETECTION ===
+local function isMobileDevice()
+	return UserInputService.TouchEnabled
+		and not UserInputService.KeyboardEnabled
+		and not UserInputService.MouseEnabled
+end
+
+local isMobile = isMobileDevice()
+
+-- === SAFE AUTO SIZE (REQUESTED) ===
+local function safeSize(pxWidth, pxHeight)
+	local scaleX = pxWidth / viewport.X
+	local scaleY = pxHeight / viewport.Y
+
+	if isMobile then
+		scaleX = math.clamp(scaleX, 0, 0.5)
+		scaleY = math.clamp(scaleY, 0, 0.35)
+	end
+
+	return UDim2.new(scaleX, pxWidth * 0.1, scaleY, pxHeight * 0.1)
+end
+
 -- ScreenGui
 local gui = Instance.new("ScreenGui")
 gui.Name = "JriikTools_V1"
 gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 
--- === AUTO SIZE (HP FIRST) ===
-local screenSize = camera.ViewportSize
-local scale
-
-if screenSize.Y < 600 then
-	scale = 0.75
-elseif screenSize.Y < 720 then
-	scale = 0.85
-else
-	scale = 1
-end
-
-local WIDTH = math.floor(360 * scale)
-local HEIGHT = math.floor(320 * scale)
-
 -- Main Frame
 local main = Instance.new("Frame")
 main.Parent = gui
-main.Size = UDim2.new(0, WIDTH, 0, HEIGHT)
+main.Size = safeSize(360, 320)
 main.Position = UDim2.new(0.5, 0, 0.5, 0)
 main.AnchorPoint = Vector2.new(0.5, 0.5)
 main.BackgroundColor3 = Color3.fromRGB(32,32,32)
 main.BorderSizePixel = 0
 
--- Header (Drag Area)
-local headerHeight = math.floor(40 * scale)
+-- Header (Drag)
 local header = Instance.new("TextLabel")
 header.Parent = main
-header.Size = UDim2.new(1, 0, 0, headerHeight)
+header.Size = UDim2.new(1, 0, 0, 40)
 header.BackgroundColor3 = Color3.fromRGB(24,24,24)
 header.BorderSizePixel = 0
 header.Text = "JriikTools V1"
@@ -82,7 +89,7 @@ header.InputEnded:Connect(function(i)
 	end
 end)
 
-UIS.InputChanged:Connect(function(i)
+UserInputService.InputChanged:Connect(function(i)
 	if dragging and (
 		i.UserInputType == Enum.UserInputType.Touch
 		or i.UserInputType == Enum.UserInputType.MouseMovement
@@ -98,27 +105,26 @@ UIS.InputChanged:Connect(function(i)
 end)
 
 -- Tab Bar
-local tabBarHeight = math.floor(36 * scale)
 local tabBar = Instance.new("Frame")
 tabBar.Parent = main
-tabBar.Position = UDim2.new(0, 0, 0, headerHeight)
-tabBar.Size = UDim2.new(1, 0, 0, tabBarHeight)
+tabBar.Position = UDim2.new(0, 0, 0, 40)
+tabBar.Size = UDim2.new(1, 0, 0, 36)
 tabBar.BackgroundColor3 = Color3.fromRGB(25,25,25)
 tabBar.BorderSizePixel = 0
 
 local tabLayout = Instance.new("UIListLayout")
 tabLayout.Parent = tabBar
 tabLayout.FillDirection = Enum.FillDirection.Horizontal
-tabLayout.Padding = UDim.new(0, math.floor(4 * scale))
+tabLayout.Padding = UDim.new(0, 4)
 
 -- Pages Holder
 local pages = Instance.new("Frame")
 pages.Parent = main
-pages.Position = UDim2.new(0, 0, 0, headerHeight + tabBarHeight)
-pages.Size = UDim2.new(1, 0, 1, -(headerHeight + tabBarHeight))
+pages.Position = UDim2.new(0, 0, 0, 76)
+pages.Size = UDim2.new(1, 0, 1, -76)
 pages.BackgroundTransparency = 1
 
--- Page Storage
+-- Pages
 local pageList = {}
 
 local function createPage(name)
@@ -134,7 +140,7 @@ end
 local function createTab(name)
 	local btn = Instance.new("TextButton")
 	btn.Parent = tabBar
-	btn.Size = UDim2.new(0, math.floor(95 * scale), 1, 0)
+	btn.Size = UDim2.new(0, 95, 1, 0)
 	btn.BackgroundColor3 = Color3.fromRGB(45,45,45)
 	btn.BorderSizePixel = 0
 	btn.Text = name
@@ -166,26 +172,25 @@ createTab("AutoQuest")
 createTab("Teleport")
 createTab("Misc")
 
--- Default Page
 pageList.Info.Visible = true
 
 -- Label Helper
-local function createLabel(parent, text)
-	local lbl = Instance.new("TextLabel")
-	lbl.Parent = parent
-	lbl.Size = UDim2.new(1, -20, 0, math.floor(30 * scale))
-	lbl.Position = UDim2.new(0, 10, 0, 10)
-	lbl.BackgroundTransparency = 1
-	lbl.Text = text
-	lbl.TextColor3 = Color3.fromRGB(255,255,255)
-	lbl.TextXAlignment = Enum.TextXAlignment.Left
-	lbl.TextScaled = true
+local function label(parent, text)
+	local l = Instance.new("TextLabel")
+	l.Parent = parent
+	l.Size = UDim2.new(1, -20, 0, 30)
+	l.Position = UDim2.new(0, 10, 0, 10)
+	l.BackgroundTransparency = 1
+	l.Text = text
+	l.TextColor3 = Color3.fromRGB(255,255,255)
+	l.TextXAlignment = Enum.TextXAlignment.Left
+	l.TextScaled = true
 end
 
--- Page Content
-createLabel(pageList.Info, "Welcome to JriikTools V1")
-createLabel(pageList.Fishing, "Fishing features here")
-createLabel(pageList.Shop, "Shop features here")
-createLabel(pageList.AutoQuest, "AutoQuest features here")
-createLabel(pageList.Teleport, "Teleport features here")
-createLabel(pageList.Misc, "Misc features here")
+-- Content
+label(pageList.Info, "Welcome to JriikTools V1")
+label(pageList.Fishing, "Fishing features here")
+label(pageList.Shop, "Shop features here")
+label(pageList.AutoQuest, "AutoQuest features here")
+label(pageList.Teleport, "Teleport features here")
+label(pageList.Misc, "Misc features here")
