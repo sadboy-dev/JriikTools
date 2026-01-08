@@ -4,7 +4,7 @@
 
 -- Load Library
 local AIKO = loadstring(game:HttpGet(
-    "https://raw.githubusercontent.com/sadboy-dev/mulai/refs/heads/main/libary.lua"
+    "https://raw.githubusercontent.com/sadboy-dev/JriikTools/refs/heads/main/libary.lua"
 ))()
 
 CURRENT_VERSION = "1.0"
