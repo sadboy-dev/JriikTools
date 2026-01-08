@@ -28,7 +28,16 @@ gui.Parent = player:WaitForChild("PlayerGui")
 
 -- === AUTO SIZE CALCULATION ===
 local screenSize = camera.ViewportSize
-local scale = math.clamp(screenSize.X / 800, 0.75, 1)
+
+-- HP FIRST scaling
+local scale
+if screenSize.Y < 600 then
+	scale = 0.75
+elseif screenSize.Y < 720 then
+	scale = 0.85
+else
+	scale = 1
+end
 
 local WIDTH = math.floor(330 * scale)
 local HEIGHT = math.floor(320 * scale)
