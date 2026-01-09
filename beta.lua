@@ -150,7 +150,7 @@ local function createTab(name)
 	b.TextColor3 = Theme.SubText
 	b.BorderSizePixel = 0
 	b.AutoButtonColor = true
-	Instance.new("UICorner", b).CornerRadius = UDim.new(0,8)
+	Instance.new("UICorner", b).CornerRadius = UDim.new(0,6)
 	b.Size = UDim2.new(0,78,1,0)
 	tabButtons[name] = b
 
