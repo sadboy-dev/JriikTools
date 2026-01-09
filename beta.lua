@@ -1,4 +1,4 @@
---// QU33N UI v2 FINAL POLISHED - Title posisinya digeser
+--// QU33N UI v2 FINAL – Tab Rapat & Font Kecil
 --// Delta Mobile Compatible
 
 repeat task.wait() until game:IsLoaded()
@@ -133,7 +133,7 @@ Header.ZIndex = 2
 local Title = Instance.new("TextLabel", Header)
 Title.Text = "QU33N"
 Title.Font = Enum.Font.GothamBold
-Title.TextSize = 18 -- tetap
+Title.TextSize = 18
 Title.TextColor3 = Theme.Text
 Title.BackgroundTransparency = 1
 Title.Size = UDim2.new(1,0,1,0)
@@ -143,20 +143,15 @@ Title.ZIndex = 2
 ----------------------------------------------------------------
 -- TAB BAR
 ----------------------------------------------------------------
-local TabBar = Instance.new("ScrollingFrame", Main)
-TabBar.Position = UDim2.new(0,16,0,58) -- naik lebih dekat ke header
-TabBar.Size = UDim2.new(1,-32,0,40) -- lebih rendah
-TabBar.CanvasSize = UDim2.new(0,0,0,0)
-TabBar.ScrollBarThickness = 0
-TabBar.BackgroundColor3 = Theme.Panel
+local TabBar = Instance.new("Frame", Main)
+TabBar.Position = UDim2.new(0,16,0,58)
+TabBar.Size = UDim2.new(1,-32,0,36)
+TabBar.BackgroundTransparency = 1
 TabBar.ZIndex = 10
-Instance.new("UICorner", TabBar).CornerRadius = UDim.new(0,12)
 
-local TabLayout = Instance.new("UIListLayout", TabBar)
-TabLayout.FillDirection = Enum.FillDirection.Horizontal
-TabLayout.Padding = UDim.new(0,3) -- jarak tab ~3 px
-TabLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-TabLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+local TabsContainer = Instance.new("Frame", TabBar)
+TabsContainer.Size = UDim2.new(1,0,1,0)
+TabsContainer.BackgroundTransparency = 1
 
 ----------------------------------------------------------------
 -- PAGES
@@ -178,18 +173,24 @@ local function setActive(tabName)
 	notify("Tab: "..tabName)
 end
 
-local function createTab(name)
+local function createTab(name, totalTabs)
 	local b = Instance.new("TextButton")
-	b.Parent = TabBar
-	b.Size = UDim2.new(0,78,0,32) -- tinggi tombol lebih rendah
-	b.Position = UDim2.new(0,0,0.5,-16) -- vertikal center
-	b.Text = name
-	b.Font = Enum.Font.GothamMedium
-	b.TextSize = 15
-	b.TextColor3 = Theme.SubText
+	b.Parent = TabsContainer
 	b.BackgroundColor3 = Theme.Panel
+	b.Text = name
+	b.Font = Enum.Font.Gotham
+	b.TextSize = 14 -- lebih kecil
+	b.TextColor3 = Theme.SubText
+	b.BorderSizePixel = 0
 	b.ZIndex = 11
 	Instance.new("UICorner", b).CornerRadius = UDim.new(0,8)
+
+	-- otomatis menyesuaikan lebar tab
+	local totalWidth = TabsContainer.AbsoluteSize.X
+	local tabWidth = math.floor((totalWidth - (totalTabs-1)*3) / totalTabs)
+	b.Size = UDim2.new(0, tabWidth, 1,0)
+	b.Position = UDim2.new(0, (#tabButtons)*(tabWidth + 3), 0, 0)
+
 	tabButtons[name] = b
 
 	b.MouseButton1Click:Connect(function()
@@ -209,17 +210,11 @@ end
 ----------------------------------------------------------------
 -- CREATE TABS
 ----------------------------------------------------------------
-local tabs = {
-	"Info",
-	"Fishing",
-	"Shop",
-	"AutoQuest",
-	"Teleport",
-	"Misc"
-}
+local tabs = {"Info","Fishing","Shop","AutoQuest","Teleport","Misc"}
+local totalTabs = #tabs
 
 for _,name in ipairs(tabs) do
-	createTab(name)
+	createTab(name, totalTabs)
 	createPage(name)
 end
 
