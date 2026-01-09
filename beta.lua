@@ -1,8 +1,8 @@
---// QU33N UI - RAW SAFE FINAL (Delta Mobile)
+--// QU33N UI v2 - RAW SAFE + Notification (Delta Mobile)
 --// Can be loaded via: loadstring(game:HttpGet(RAW_URL))()
 
 ----------------------------------------------------------------
--- RAW SAFE BOOTSTRAP (WAJIB)
+-- RAW SAFE BOOTSTRAP
 ----------------------------------------------------------------
 repeat task.wait() until game:IsLoaded()
 task.wait(1)
@@ -14,6 +14,21 @@ task.spawn(function()
 ----------------------------------------------------------------
 local UserInputService = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
+local StarterGui = game:GetService("StarterGui")
+
+----------------------------------------------------------------
+-- NOTIFICATION FUNCTION
+----------------------------------------------------------------
+local function notify(text)
+	pcall(function()
+		StarterGui:SetCore("SendNotification", {
+			Title = "QU33N",
+			Text = text,
+			Icon = "rbxthumb://type=Asset&id=5107182114&w=150&h=150",
+			Duration = 5
+		})
+	end)
+end
 
 ----------------------------------------------------------------
 -- DEVICE DETECTION
@@ -46,7 +61,7 @@ local Theme = {
 }
 
 ----------------------------------------------------------------
--- GUI SIZE (LOCKED - USER REQUEST)
+-- GUI SIZE (LOCKED)
 ----------------------------------------------------------------
 local function responsiveSize()
 	if isMobile then
@@ -129,7 +144,7 @@ Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.ZIndex = 2
 
 ----------------------------------------------------------------
--- TAB BAR (SCROLLABLE & RAW SAFE)
+-- TAB BAR (SCROLLABLE)
 ----------------------------------------------------------------
 local TabBar = Instance.new("ScrollingFrame", Main)
 TabBar.Position = UDim2.new(0,16,0,78)
@@ -163,6 +178,7 @@ local function setActive(tabName)
 		btn.TextColor3 = (name == tabName) and Theme.Accent or Theme.SubText
 		pageList[name].Visible = (name == tabName)
 	end
+	notify("Tab: "..tabName)
 end
 
 local function createTab(name)
@@ -208,7 +224,7 @@ for _,name in ipairs(tabs) do
 	createPage(name)
 end
 
-setActive("Info")
+setActive("Info")  -- default tab
 
 ----------------------------------------------------------------
 -- CONTENT HELPER
@@ -235,6 +251,11 @@ label(pageList.Shop, "Shop features here", 10)
 label(pageList.AutoQuest, "AutoQuest features here", 10)
 label(pageList.Teleport, "Teleport features here", 10)
 label(pageList.Misc, "Misc features here", 10)
+
+----------------------------------------------------------------
+-- SCRIPT LOADED NOTIFICATION
+----------------------------------------------------------------
+notify("QU33N Loaded Successfully!")
 
 ----------------------------------------------------------------
 -- END
