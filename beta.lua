@@ -1,4 +1,4 @@
---// QU33N UI v2 FINAL – Tab Rapat & Font Kecil
+--// QU33N UI v2 FINAL – Tab rapat & semua muncul
 --// Delta Mobile Compatible
 
 repeat task.wait() until game:IsLoaded()
@@ -125,7 +125,7 @@ end)
 -- HEADER
 ----------------------------------------------------------------
 local Header = Instance.new("Frame", Main)
-Header.Position = UDim2.new(0,16,0,6) -- geser Header lebih ke atas
+Header.Position = UDim2.new(0,16,0,6)
 Header.Size = UDim2.new(1,-32,0,50)
 Header.BackgroundTransparency = 1
 Header.ZIndex = 2
@@ -153,6 +153,13 @@ local TabsContainer = Instance.new("Frame", TabBar)
 TabsContainer.Size = UDim2.new(1,0,1,0)
 TabsContainer.BackgroundTransparency = 1
 
+-- UIListLayout untuk semua tab muncul rapat
+local TabLayout = Instance.new("UIListLayout", TabsContainer)
+TabLayout.FillDirection = Enum.FillDirection.Horizontal
+TabLayout.Padding = UDim.new(0,3) -- jarak antar tab 3 px
+TabLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+TabLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+
 ----------------------------------------------------------------
 -- PAGES
 ----------------------------------------------------------------
@@ -173,24 +180,18 @@ local function setActive(tabName)
 	notify("Tab: "..tabName)
 end
 
-local function createTab(name, totalTabs)
+local function createTab(name)
 	local b = Instance.new("TextButton")
 	b.Parent = TabsContainer
 	b.BackgroundColor3 = Theme.Panel
 	b.Text = name
 	b.Font = Enum.Font.Gotham
-	b.TextSize = 14 -- lebih kecil
+	b.TextSize = 14 -- font lebih kecil
 	b.TextColor3 = Theme.SubText
 	b.BorderSizePixel = 0
-	b.ZIndex = 11
+	b.AutoButtonColor = true
 	Instance.new("UICorner", b).CornerRadius = UDim.new(0,8)
-
-	-- otomatis menyesuaikan lebar tab
-	local totalWidth = TabsContainer.AbsoluteSize.X
-	local tabWidth = math.floor((totalWidth - (totalTabs-1)*3) / totalTabs)
-	b.Size = UDim2.new(0, tabWidth, 1,0)
-	b.Position = UDim2.new(0, (#tabButtons)*(tabWidth + 3), 0, 0)
-
+	b.Size = UDim2.new(0,78,1,0) -- lebar tetap, rapat karena UIListLayout
 	tabButtons[name] = b
 
 	b.MouseButton1Click:Connect(function()
@@ -211,10 +212,8 @@ end
 -- CREATE TABS
 ----------------------------------------------------------------
 local tabs = {"Info","Fishing","Shop","AutoQuest","Teleport","Misc"}
-local totalTabs = #tabs
-
 for _,name in ipairs(tabs) do
-	createTab(name, totalTabs)
+	createTab(name)
 	createPage(name)
 end
 
