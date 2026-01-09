@@ -1,9 +1,7 @@
---// QU33N UI v2 - RAW SAFE + Notification (Delta Mobile)
+--// QU33N UI v2 FINAL - RAW SAFE + Notification
+--// Delta Mobile Compatible
 --// Can be loaded via: loadstring(game:HttpGet(RAW_URL))()
 
-----------------------------------------------------------------
--- RAW SAFE BOOTSTRAP
-----------------------------------------------------------------
 repeat task.wait() until game:IsLoaded()
 task.wait(1)
 
@@ -61,7 +59,7 @@ local Theme = {
 }
 
 ----------------------------------------------------------------
--- GUI SIZE (LOCKED)
+-- GUI SIZE
 ----------------------------------------------------------------
 local function responsiveSize()
 	if isMobile then
@@ -129,14 +127,14 @@ end)
 ----------------------------------------------------------------
 local Header = Instance.new("Frame", Main)
 Header.Position = UDim2.new(0,16,0,14)
-Header.Size = UDim2.new(1,-32,0,56)
+Header.Size = UDim2.new(1,-32,0,50)
 Header.BackgroundTransparency = 1
 Header.ZIndex = 2
 
 local Title = Instance.new("TextLabel", Header)
 Title.Text = "QU33N"
 Title.Font = Enum.Font.GothamBold
-Title.TextSize = 18
+Title.TextSize = 18 -- kecilkan text
 Title.TextColor3 = Theme.Text
 Title.BackgroundTransparency = 1
 Title.Size = UDim2.new(1,0,1,0)
@@ -144,10 +142,10 @@ Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.ZIndex = 2
 
 ----------------------------------------------------------------
--- TAB BAR (SCROLLABLE)
+-- TAB BAR
 ----------------------------------------------------------------
 local TabBar = Instance.new("ScrollingFrame", Main)
-TabBar.Position = UDim2.new(0,16,0,60)
+TabBar.Position = UDim2.new(0,16,0,64) -- naik lebih dekat ke header
 TabBar.Size = UDim2.new(1,-32,0,46)
 TabBar.CanvasSize = UDim2.new(0,0,0,0)
 TabBar.ScrollBarThickness = 0
@@ -157,7 +155,7 @@ Instance.new("UICorner", TabBar).CornerRadius = UDim.new(0,14)
 
 local TabLayout = Instance.new("UIListLayout", TabBar)
 TabLayout.FillDirection = Enum.FillDirection.Horizontal
-TabLayout.Padding = UDim.new(0,14)
+TabLayout.Padding = UDim.new(0,6) -- rapatkan tab
 TabLayout.VerticalAlignment = Enum.VerticalAlignment.Center
 TabLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
 
@@ -165,8 +163,8 @@ TabLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
 -- PAGES
 ----------------------------------------------------------------
 local Pages = Instance.new("Frame", Main)
-Pages.Position = UDim2.new(0,16,0,132)
-Pages.Size = UDim2.new(1,-32,1,-148)
+Pages.Position = UDim2.new(0,16,0,112)
+Pages.Size = UDim2.new(1,-32,1,-128)
 Pages.BackgroundTransparency = 1
 Pages.ZIndex = 1
 
@@ -184,7 +182,7 @@ end
 local function createTab(name)
 	local b = Instance.new("TextButton")
 	b.Parent = TabBar
-	b.Size = UDim2.new(0,90,1,0)
+	b.Size = UDim2.new(0,80,1,0) -- sedikit lebih kecil supaya muat semua tab
 	b.Text = name
 	b.Font = Enum.Font.GothamMedium
 	b.TextSize = 15
@@ -224,7 +222,7 @@ for _,name in ipairs(tabs) do
 	createPage(name)
 end
 
-setActive("Info")  -- default tab
+setActive("Info")
 
 ----------------------------------------------------------------
 -- CONTENT HELPER
