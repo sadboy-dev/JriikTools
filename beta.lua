@@ -1,34 +1,32 @@
---// Aikoware UI - Delta Mobile Friendly (UI ONLY)
+--// Aikoware UI - FIXED v2 (Delta Mobile)
 
 -- Services
-local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
 
--- Detect device
+-- Detect mobile
 local function isMobileDevice()
 	return UserInputService.TouchEnabled
 		and not UserInputService.KeyboardEnabled
 		and not UserInputService.MouseEnabled
 end
-
 local isMobile = isMobileDevice()
 
--- Prevent double GUI
+-- Remove old GUI
 if CoreGui:FindFirstChild("Aikoware") then
 	CoreGui.Aikoware:Destroy()
 end
 
 -- Theme
 local Theme = {
-	BG = Color3.fromRGB(15, 17, 21),
-	Panel = Color3.fromRGB(26, 30, 36),
-	Text = Color3.fromRGB(235, 235, 235),
-	SubText = Color3.fromRGB(155, 160, 166),
-	Accent = Color3.fromRGB(79, 139, 255)
+	BG = Color3.fromRGB(15,17,21),
+	Panel = Color3.fromRGB(26,30,36),
+	Text = Color3.fromRGB(235,235,235),
+	SubText = Color3.fromRGB(155,160,166),
+	Accent = Color3.fromRGB(79,139,255)
 }
 
--- GUI size (LOCKED - YOUR REQUEST)
+-- GUI size (LOCKED)
 local function responsiveSize()
 	if isMobile then
 		return UDim2.new(0.62, 0, 0.82, 0)
@@ -43,20 +41,19 @@ ScreenGui.Name = "Aikoware"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = CoreGui
 
--- Main Frame
+-- Main
 local Main = Instance.new("Frame")
 Main.Parent = ScreenGui
 Main.AnchorPoint = Vector2.new(0.5, 0.5)
-Main.Position = UDim2.new(0.5, 0, 0.52, 0) -- safe for notch
+Main.Position = UDim2.new(0.5, 0, 0.52, 0)
 Main.Size = responsiveSize()
 Main.BackgroundColor3 = Theme.BG
 Main.ClipsDescendants = true
+Main.ZIndex = 1
 Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 18)
 
--- ===== Drag (Mobile) =====
-local dragging = false
-local dragStart, startPos
-
+-- Drag (mobile)
+local dragging, dragStart, startPos
 Main.InputBegan:Connect(function(i)
 	if i.UserInputType == Enum.UserInputType.Touch then
 		dragging = true
@@ -85,180 +82,108 @@ end)
 
 -- Header
 local Header = Instance.new("Frame", Main)
-Header.Size = UDim2.new(1, -32, 0, 64)
-Header.Position = UDim2.new(0, 16, 0, 16)
+Header.Position = UDim2.new(0,16,0,14)
+Header.Size = UDim2.new(1,-32,0,56)
 Header.BackgroundTransparency = 1
+Header.ZIndex = 2
 
 local Title = Instance.new("TextLabel", Header)
 Title.Text = "Aikoware"
 Title.Font = Enum.Font.GothamBold
-Title.TextSize = 32
+Title.TextSize = 30
 Title.TextColor3 = Theme.Text
 Title.BackgroundTransparency = 1
-Title.Size = UDim2.new(1, 0, 1, 0)
-Title.TextXAlignment = Left
-
-local Version = Instance.new("TextLabel", Header)
-Version.Text = "v1"
-Version.Font = Enum.Font.Gotham
-Version.TextSize = 14
-Version.TextColor3 = Theme.SubText
-Version.BackgroundTransparency = 1
-Version.AnchorPoint = Vector2.new(1, 0.5)
-Version.Position = UDim2.new(1, 0, 0.5, 0)
-Version.Size = UDim2.new(0, 30, 0, 20)
+Title.Size = UDim2.new(1,0,1,0)
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.ZIndex = 2
 
 -- Tab Bar
-local TabBar = Instance.new("Frame", Main)
-TabBar.Position = UDim2.new(0, 16, 0, 90)
-TabBar.Size = UDim2.new(1, -32, 0, 46)
+local TabBar = Instance.new("ScrollingFrame", Main)
+TabBar.Position = UDim2.new(0,16,0,78)
+TabBar.Size = UDim2.new(1,-32,0,46)
+TabBar.CanvasSize = UDim2.new(0,0,0,0)
+TabBar.ScrollBarThickness = 0
 TabBar.BackgroundColor3 = Theme.Panel
-Instance.new("UICorner", TabBar).CornerRadius = UDim.new(0, 14)
+TabBar.ZIndex = 10
+Instance.new("UICorner", TabBar).CornerRadius = UDim.new(0,14)
 
 local TabLayout = Instance.new("UIListLayout", TabBar)
 TabLayout.FillDirection = Enum.FillDirection.Horizontal
-TabLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+TabLayout.Padding = UDim.new(0,14)
+TabLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
 TabLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-TabLayout.Padding = UDim.new(0, 14)
 
-local function Tab(text, active)
-	local t = Instance.new("TextLabel")
-	t.Text = text
-	t.Font = Enum.Font.GothamMedium
-	t.TextSize = 15
-	t.TextColor3 = active and Theme.Accent or Theme.SubText
-	t.BackgroundTransparency = 1
-	t.Size = UDim2.new(0, 90, 1, 0)
-	t.Parent = TabBar
+-- Pages
+local Pages = Instance.new("Frame", Main)
+Pages.Position = UDim2.new(0,16,0,132)
+Pages.Size = UDim2.new(1,-32,1,-148)
+Pages.BackgroundTransparency = 1
+Pages.ZIndex = 1
+
+local pageList = {}
+local tabButtons = {}
+
+local function setActive(tabName)
+	for name,btn in pairs(tabButtons) do
+		btn.TextColor3 = (name == tabName) and Theme.Accent or Theme.SubText
+		pageList[name].Visible = (name == tabName)
+	end
 end
 
-Tab("Home", false)
-Tab("Fishing", true)
-Tab("Shop", false)
-Tab("Auto Fav", false)
-Tab("Teleport", false)
-Tab("Trade", false)
-Tab("Webhook", false)
+local function createTab(name)
+	local b = Instance.new("TextButton")
+	b.Parent = TabBar
+	b.Size = UDim2.new(0,90,1,0)
+	b.Text = name
+	b.Font = Enum.Font.GothamMedium
+	b.TextSize = 15
+	b.TextColor3 = Theme.SubText
+	b.BackgroundTransparency = 1
+	b.ZIndex = 11
 
--- Content
-local Content = Instance.new("Frame", Main)
-Content.Position = UDim2.new(0, 16, 0, 150)
-Content.Size = UDim2.new(1, -32, 1, -166)
-Content.BackgroundTransparency = 1
+	tabButtons[name] = b
 
--- Columns
-local Left = Instance.new("Frame", Content)
-Left.Size = UDim2.new(0.48, 0, 1, 0)
-Left.BackgroundTransparency = 1
+	b.MouseButton1Click:Connect(function()
+		setActive(name)
+	end)
+end
 
-local Right = Instance.new("Frame", Content)
-Right.Position = UDim2.new(0.52, 0, 0, 0)
-Right.Size = UDim2.new(0.48, 0, 1, 0)
-Right.BackgroundTransparency = 1
+local function createPage(name)
+	local p = Instance.new("Frame")
+	p.Parent = Pages
+	p.Size = UDim2.new(1,0,1,0)
+	p.BackgroundTransparency = 1
+	p.Visible = false
+	pageList[name] = p
+end
 
--- Helpers
-local function Section(parent, text, y)
+-- Tabs
+for _,name in ipairs({
+	"Home","Fishing","Shop","Auto Fav","Teleport","Trade","Webhook"
+}) do
+	createTab(name)
+	createPage(name)
+end
+
+setActive("Fishing")
+
+-- Simple content helper
+local function label(parent,text,y)
 	local l = Instance.new("TextLabel", parent)
 	l.Text = text
-	l.Font = Enum.Font.GothamBold
+	l.Font = Enum.Font.Gotham
 	l.TextSize = 18
 	l.TextColor3 = Theme.Text
 	l.BackgroundTransparency = 1
-	l.Position = UDim2.new(0, 0, 0, y)
-	l.Size = UDim2.new(1, 0, 0, 30)
-	l.TextXAlignment = Left
-	return y + 36
+	l.Position = UDim2.new(0,0,0,y)
+	l.Size = UDim2.new(1,0,0,30)
+	l.TextXAlignment = Enum.TextXAlignment.Left
 end
 
-local function Toggle(parent, text, y)
-	local f = Instance.new("Frame", parent)
-	f.Position = UDim2.new(0, 0, 0, y)
-	f.Size = UDim2.new(1, 0, 0, 40)
-	f.BackgroundTransparency = 1
-
-	local l = Instance.new("TextLabel", f)
-	l.Text = text
-	l.Font = Enum.Font.Gotham
-	l.TextSize = 15
-	l.TextColor3 = Theme.Text
-	l.BackgroundTransparency = 1
-	l.Size = UDim2.new(0.7, 0, 1, 0)
-	l.TextXAlignment = Left
-
-	local t = Instance.new("Frame", f)
-	t.AnchorPoint = Vector2.new(1, 0.5)
-	t.Position = UDim2.new(1, 0, 0.5, 0)
-	t.Size = UDim2.new(0, 42, 0, 22)
-	t.BackgroundColor3 = Theme.Panel
-	Instance.new("UICorner", t).CornerRadius = UDim.new(1, 0)
-
-	local c = Instance.new("Frame", t)
-	c.Position = UDim2.new(0, 2, 0.5, -9)
-	c.Size = UDim2.new(0, 18, 0, 18)
-	c.BackgroundColor3 = Color3.fromRGB(130, 130, 130)
-	Instance.new("UICorner", c).CornerRadius = UDim.new(1, 0)
-
-	return y + 44
-end
-
-local function Input(parent, text, value, y)
-	local f = Instance.new("Frame", parent)
-	f.Position = UDim2.new(0, 0, 0, y)
-	f.Size = UDim2.new(1, 0, 0, 40)
-	f.BackgroundTransparency = 1
-
-	local l = Instance.new("TextLabel", f)
-	l.Text = text
-	l.Font = Enum.Font.Gotham
-	l.TextSize = 15
-	l.TextColor3 = Theme.Text
-	l.BackgroundTransparency = 1
-	l.Size = UDim2.new(0.7, 0, 1, 0)
-	l.TextXAlignment = Left
-
-	local box = Instance.new("TextBox", f)
-	box.Text = value
-	box.Font = Enum.Font.Gotham
-	box.TextSize = 15
-	box.TextColor3 = Theme.Text
-	box.BackgroundColor3 = Theme.Panel
-	box.AnchorPoint = Vector2.new(1, 0.5)
-	box.Position = UDim2.new(1, 0, 0.5, 0)
-	box.Size = UDim2.new(0, 64, 0, 28)
-	Instance.new("UICorner", box).CornerRadius = UDim.new(0, 8)
-
-	return y + 44
-end
-
--- LEFT CONTENT
-local y = 0
-y = Section(Left, "Legit", y)
-y = Toggle(Left, "Legit Fishing", y)
-
-local fix = Instance.new("TextButton", Left)
-fix.Text = "Manual Fix Stuck"
-fix.Font = Enum.Font.GothamMedium
-fix.TextSize = 15
-fix.TextColor3 = Theme.Text
-fix.BackgroundColor3 = Theme.Panel
-fix.Position = UDim2.new(0, 0, 0, y)
-fix.Size = UDim2.new(1, 0, 0, 40)
-Instance.new("UICorner", fix).CornerRadius = UDim.new(0, 10)
-y += 56
-
-y = Section(Left, "Instant", y)
-y = Toggle(Left, "Instant Fishing", y)
-y = Input(Left, "Complete Delay", "0.5", y)
-y = Input(Left, "Fishing Delay", "0.15", y)
-y = Input(Left, "Reel Delay", "0.1", y)
-
--- RIGHT CONTENT
-local ry = 0
-ry = Section(Right, "Instant", ry)
-ry = Toggle(Right, "Instant Fishing", ry)
-ry = Input(Right, "Complete Delay", "0.5", ry)
-ry += 12
-ry = Section(Right, "Auto Fish Misc", ry)
-ry = Toggle(Right, "Disable Fish Notification", ry)
-ry = Toggle(Right, "Disable Animations", ry)
-ry = Toggle(Right, "Freeze Character", ry)
+label(pageList.Home,"Home Page",10)
+label(pageList.Fishing,"Fishing Page",10)
+label(pageList.Shop,"Shop Page",10)
+label(pageList["Auto Fav"],"Auto Favorite Page",10)
+label(pageList.Teleport,"Teleport Page",10)
+label(pageList.Trade,"Trade Page",10)
+label(pageList.Webhook,"Webhook Page",10)
