@@ -73,3 +73,37 @@ Title.Position = UDim.new(0, 14, 0, 0)
 Title.Size = UDim.new(0, 100, 0, 30)
 Title.TextXAlignment = Enum.TextXAlignment.Left
 
+local dragging, dragStart, startPos
+
+MainFrame.InputBegan:Connect(function(i)
+	if i.UserInputType == Enum.UserInputType.Touch
+	or i.UserInputType == Enum.UserInputType.MouseButton1 then
+		dragging = true
+		dragStart = i.Position
+		startPos = ScreenGui.Position
+	end
+end)
+
+MainFrame.InputEnded:Connect(function(i)
+	if i.UserInputType == Enum.UserInputType.Touch
+	or i.UserInputType == Enum.UserInputType.MouseButton1 then
+		dragging = false
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(i)
+	if dragging and (
+		i.UserInputType == Enum.UserInputType.Touch
+		or i.UserInputType == Enum.UserInputType.MouseMovement
+	) then
+		local delta = i.Position - dragStart
+		TweenService:Create(main, TweenInfo.new(0.15), {
+			Position = UDim2.new(
+				startPos.X.Scale,
+				startPos.X.Offset + delta.X,
+				startPos.Y.Scale,
+				startPos.Y.Offset + delta.Y
+			)
+		}):Play()
+	end
+end)
