@@ -136,151 +136,83 @@ local TabList = Instance.new("UIListLayout")
 TabList.Parent = TabContainer
 TabList.FillDirection = Enum.FillDirection.Horizontal
 TabList.Padding = UDim.new(0,6)
-TabList.VerticalAlignment = Enum.VerticalAlignment.Centerlocal function CreateTab(name, active)
-	local Tab = Instace.new("TextButton")
-	Tab.Parent = TabContainer
-	Tab.BackgroundTransparency = 1
-	Tab.Size = UDim2.new(0, 50, 1, 0)
-	Tab.Font = Enum.Font.GothamSemibold
-    Tab.Text = name
-    Tab.TextColor3 = active and Color3.fromRGB(100, 160, 255) or Color3.fromRGB(180, 180, 180)
-    Tab.TextSize = 13
-    return Tab
+
+local pages = Instance.new("Frame")
+pages.parent = TabContainer
+pages.Position = UDim2.new(0, 0, 0, 104)
+pages.Size = UDim2.new(1, 0, 1, -104)
+pages.BackgroundTransparency = 1
+
+local pageList = {}
+local tabButttons = {}
+
+local function createPage(name)
+	local p = Instance.new("Frame")
+	p.Parent = pages
+	p.Size = UDim2.new(1, 0, 1, 0)
+	p.Visible = false
+	p.BackgroundTransparency = 1
+	pageList[name] = p
+	return p
 end
 
-CreateTab("Home", true)
-CreateTab("Fishing", false)
-CreateTab("Shop", false)
-CreateTab("Auto", false)
-CreateTab("Teleport", false)
-CreateTab("Misc", false)
-
-local Content = Instance.new("Frame")
-Content.Parent = MainFrame
-Content.BackgroundTransparency = 1
-Content.Position = UDim2.new(0, 15, 0, 115)
-Content.Size = UDim2.new(1, -30, 1, -130)
-
-local LeftCol = Instance.new("ScrollingFrame")
-LeftCol.Parent = Content
-LeftCol.Size = UDim2.new(0.48, 0, 1, 0)
-LeftCol.BackgroundTransparency = 1
-LeftCol.ScrollBarThickness = 0
-
-local RightCol = Instance.new("ScrollingFrame")
-RightCol.Parent = Content
-RightCol.Position = UDim2.new(0.52, 0, 0, 0)
-RightCol.Size = UDim2.new(0.48, 0, 1, 0)
-RightCol.BackgroundTransparency = 1
-RightCol.ScrollBarThickness = 0
-
-local function AddLayout(p)
-    local L = Instance.new("UIListLayout", p)
-    L.SortOrder = Enum.SortOrder.LayoutOrder
-    L.Padding = UDim.new(0, 8)
-end
-AddLayout(LeftCol)
-AddLayout(RightCol)-- UI Components
-local function AddSection(parent, text)
-    local Label = Instance.new("TextLabel")    Label.Parent = parent
-    Label.Size = UDim2.new(1, 0, 0, 25)
-    Label.BackgroundTransparency = 1
-    Label.Text = text
-    Label.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Label.Font = Enum.Font.GothamBold
-    Label.TextSize = 14
-    Label.TextXAlignment = Enum.TextXAlignment.Left
+local function setActive(tabName)
+	for n,b in pairs(tabButtons) do
+		b.BackgroundColor3 = (n == tabName)
+			and Color3.fromRGB(60,60,60)
+			or Color3.fromRGB(35,35,35)
+	end
 end
 
-local function AddToggle(parent, text, state)
-    local Frame = Instance.new("Frame")
-    Frame.Parent = parent
-    Frame.Size = UDim2.new(1, 0, 0, 30)
-    Frame.BackgroundTransparency = 1
-    
-    local Label = Instance.new("TextLabel")
-    Label.Parent = Frame
-    Label.Size = UDim2.new(1, -40, 1, 0)
-    Label.BackgroundTransparency = 1
-    Label.Text = text
-    Label.TextColor3 = Color3.fromRGB(200, 200, 200)
-    Label.Font = Enum.Font.Gotham
-    Label.TextSize = 13
-    Label.TextXAlignment = Enum.TextXAlignment.Left
+local function createTab(name)
+	local b = Instance.new("TextButton")
+	b.Parent = tabBar
+	b.Size = UDim2.new(0, 78, 1, 0)
+	b.BackgroundColor3 = Color3.fromRGB(35,35,35)
+	b.Text = name
+	b.Font = Enum.Font.GothamBold
+	b.TextScaled = true
+	b.TextColor3 = Color3.fromRGB(200,200,200)
+	b.BorderSizePixel = 0
+	Instance.new("UICorner", b).CornerRadius = UDim.new(0, 6)
 
-    local Bg = Instance.new("Frame")
-    Bg.Parent = Frame
-    Bg.Position = UDim2.new(1, -35, 0.5, -8)
-    Bg.Size = UDim2.new(0, 32, 0, 16)
-    Bg.BackgroundColor3 = state and Color3.fromRGB(60, 120, 255) or Color3.fromRGB(45, 45, 45)
-    Instance.new("UICorner", Bg).CornerRadius = UDim.new(1, 0)
+	tabButtons[name] = b
 
-    local Ball = Instance.new("Frame")
-    Ball.Parent = Bg
-    Ball.Position = state and UDim2.new(1, -14, 0.5, -6) or UDim2.new(0, 2, 0.5, -6)
-    Ball.Size = UDim2.new(0, 12, 0, 12)
-    Ball.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    Instance.new("UICorner", Ball).CornerRadius = UDim.new(1, 0)
+	b.MouseButton1Click:Connect(function()
+		for _,p in pairs(pageList) do p.Visible = false end
+		pageList[name].Visible = true
+		setActive(name)
+	end)
 end
 
-local function AddInput(parent, text, val)
-    local Frame = Instance.new("Frame")
-    Frame.Parent = parent
-    Frame.Size = UDim2.new(1, 0, 0, 35)
-    Frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-    Instance.new("UICorner", Frame).CornerRadius = UDim.new(0, 4)
-    
-    local Label = Instance.new("TextLabel")
-    Label.Parent = Frame
-    Label.Position = UDim2.new(0, 10, 0, 0)
-    Label.Size = UDim2.new(0.6, 0, 1, 0)
-    Label.BackgroundTransparency = 1
-    Label.Text = text
-    Label.TextColor3 = Color3.fromRGB(200, 200, 200)
-    Label.Font = Enum.Font.Gotham
-    Label.TextSize = 12
-    Label.TextXAlignment = Enum.TextXAlignment.Left
 
-    local Box = Instance.new("TextBox")
-    Box.Parent = Frame
-    Box.Position = UDim2.new(1, -60, 0.5, -10)
-    Box.Size = UDim2.new(0, 50, 0, 20)
-    Box.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-    Box.Text = val
-    Box.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Box.Font = Enum.Font.Gotham
-    Box.TextSize = 12
-    Instance.new("UICorner", Box).CornerRadius = UDim.new(0, 4)
+for _,n in ipairs({
+	"Info","Fishing","Shop","AutoQuest","Teleport","Misc"
+}) do
+	createPage(n)
+	createTab(n)
 end
 
--- Isi Konten sesuai Gambar
-AddSection(LeftCol, "Legit")
-AddToggle(LeftCol, "Legit Fishing", true)
+pageList.Info.Visible = true
+setActive("Info")
 
-local Btn = Instance.new("TextButton", LeftCol)
-Btn.Size = UDim2.new(1, 0, 0, 35)
-Btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-Btn.Text = "Manual Fix Stuck"
-Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-Btn.Font = Enum.Font.Gotham
-Instance.new("UICorner", Btn).CornerRadius = UDim.new(0, 6)
+-- Content helper
+local function label(parent, text)
+	local l = Instance.new("TextLabel")
+	l.Parent = parent
+	l.Size = UDim2.new(1, -20, 0, 34)
+	l.Position = UDim2.new(0, 10, 0, 10)
+	l.BackgroundTransparency = 1
+	l.Text = text
+	l.Font = Enum.Font.GothamMedium
+	l.TextScaled = true
+	l.TextXAlignment = Enum.TextXAlignment.Left
+	l.TextColor3 = Color3.fromRGB(245,245,245)
+end
 
-AddSection(LeftCol, "Instant")
-AddToggle(LeftCol, "Instant Fishing", false)
-AddInput(LeftCol, "Complete Delay", "0.5")
-AddInput(LeftCol, "Fishing Delay", "0.15")
-AddInput(LeftCol, "Reel Delay", "0.1")
-
-AddSection(RightCol, "Instant")
-AddToggle(RightCol, "Instant Fishing", false)
-AddInput(RightCol, "Complete Delay", "0.5")
-
-AddSection(RightCol, "Auto Fish Misc")
-AddToggle(RightCol, "Disable Fish Notification", false)
-AddToggle(RightCol, "Disable Animations", false)
-AddToggle(RightCol, "Freeze Character", false)
-```### Penjelasan Perbaikan:
-1.  **Nil Value Fix**: Error `nil value` sebelumnya terjadi karena ada fungsi yang terpanggil sebelum didefinisikan atau baris kode yang menempel. Di sini saya sudah memisahkan setiap baris dengan benar.
-2.  **Mobile Friendly**: Menambahkan fitur **Dragging** (bisa digeser) yang mendukung layar sentuh HP.
-3.  **Scrolling Frame**: Bagian Tab dan Kolom bisa di-scroll jika menu bertambah banyak, sangat penting untuk layar HP yang kecil.
-4.  **CoreGui**: Menggunakan `game:GetService("CoreGui")` agar GUI tidak hilang saat karakter mati dan aman dijalankan di Delta.
+label(pageList.Info, "Welcome to JriikTools")
+label(pageList.Fishing, "Fishing features here")
+label(pageList.Shop, "Shop features here")
+label(pageList.AutoQuest, "AutoQuest features here")
+label(pageList.Teleport, "Teleport features here")
+label(pageList.Misc, "Misc features here")
