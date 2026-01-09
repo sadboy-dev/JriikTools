@@ -168,7 +168,7 @@ local function createPage(name)
 end
 
 -- Create tabs & pages
-local tabs = {"Info","Fishing","Shop","AutoQuest","Teleport","Misc"}
+local tabs = {"Info","Fishing","Shop","Auto","Teleport","Misc"}
 for _,name in ipairs(tabs) do
 	createTab(name)
 	createPage(name)
