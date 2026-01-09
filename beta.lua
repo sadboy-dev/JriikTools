@@ -1,6 +1,5 @@
---// QU33N UI v2 FINAL - RAW SAFE + Notification
+--// QU33N UI v2 FINAL POLISHED - Title posisinya digeser
 --// Delta Mobile Compatible
---// Can be loaded via: loadstring(game:HttpGet(RAW_URL))()
 
 repeat task.wait() until game:IsLoaded()
 task.wait(1)
@@ -126,7 +125,7 @@ end)
 -- HEADER
 ----------------------------------------------------------------
 local Header = Instance.new("Frame", Main)
-Header.Position = UDim2.new(0,16,0,14)
+Header.Position = UDim2.new(0,16,0,6) -- geser Header lebih ke atas
 Header.Size = UDim2.new(1,-32,0,50)
 Header.BackgroundTransparency = 1
 Header.ZIndex = 2
@@ -134,7 +133,7 @@ Header.ZIndex = 2
 local Title = Instance.new("TextLabel", Header)
 Title.Text = "QU33N"
 Title.Font = Enum.Font.GothamBold
-Title.TextSize = 18 -- kecilkan text
+Title.TextSize = 18 -- tetap
 Title.TextColor3 = Theme.Text
 Title.BackgroundTransparency = 1
 Title.Size = UDim2.new(1,0,1,0)
@@ -145,17 +144,17 @@ Title.ZIndex = 2
 -- TAB BAR
 ----------------------------------------------------------------
 local TabBar = Instance.new("ScrollingFrame", Main)
-TabBar.Position = UDim2.new(0,16,0,64) -- naik lebih dekat ke header
-TabBar.Size = UDim2.new(1,-32,0,46)
+TabBar.Position = UDim2.new(0,16,0,58) -- naik lebih dekat ke header
+TabBar.Size = UDim2.new(1,-32,0,40) -- lebih rendah
 TabBar.CanvasSize = UDim2.new(0,0,0,0)
 TabBar.ScrollBarThickness = 0
 TabBar.BackgroundColor3 = Theme.Panel
 TabBar.ZIndex = 10
-Instance.new("UICorner", TabBar).CornerRadius = UDim.new(0,14)
+Instance.new("UICorner", TabBar).CornerRadius = UDim.new(0,12)
 
 local TabLayout = Instance.new("UIListLayout", TabBar)
 TabLayout.FillDirection = Enum.FillDirection.Horizontal
-TabLayout.Padding = UDim.new(0,2) -- lebih rapat
+TabLayout.Padding = UDim.new(0,3) -- jarak tab ~3 px
 TabLayout.VerticalAlignment = Enum.VerticalAlignment.Center
 TabLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
 
@@ -163,8 +162,8 @@ TabLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
 -- PAGES
 ----------------------------------------------------------------
 local Pages = Instance.new("Frame", Main)
-Pages.Position = UDim2.new(0,16,0,112)
-Pages.Size = UDim2.new(1,-32,1,-128)
+Pages.Position = UDim2.new(0,16,0,104)
+Pages.Size = UDim2.new(1,-32,1,-120)
 Pages.BackgroundTransparency = 1
 Pages.ZIndex = 1
 
@@ -182,8 +181,8 @@ end
 local function createTab(name)
 	local b = Instance.new("TextButton")
 	b.Parent = TabBar
-	b.Size = UDim2.new(0,80,0,36) -- lebih rendah
-	b.Position = UDim2.new(0,0,0.5,-18) -- vertikal center
+	b.Size = UDim2.new(0,78,0,32) -- tinggi tombol lebih rendah
+	b.Position = UDim2.new(0,0,0.5,-16) -- vertikal center
 	b.Text = name
 	b.Font = Enum.Font.GothamMedium
 	b.TextSize = 15
