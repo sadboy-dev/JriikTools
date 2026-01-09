@@ -1,10 +1,23 @@
---// Aikoware UI - FIXED v2 (Delta Mobile)
+--// Aikoware UI - RAW SAFE FINAL (Delta Mobile)
+--// Can be loaded via: loadstring(game:HttpGet(RAW_URL))()
 
--- Services
+----------------------------------------------------------------
+-- RAW SAFE BOOTSTRAP (WAJIB)
+----------------------------------------------------------------
+repeat task.wait() until game:IsLoaded()
+task.wait(1)
+
+task.spawn(function()
+
+----------------------------------------------------------------
+-- SERVICES
+----------------------------------------------------------------
 local UserInputService = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
 
--- Detect mobile
+----------------------------------------------------------------
+-- DEVICE DETECTION
+----------------------------------------------------------------
 local function isMobileDevice()
 	return UserInputService.TouchEnabled
 		and not UserInputService.KeyboardEnabled
@@ -12,12 +25,18 @@ local function isMobileDevice()
 end
 local isMobile = isMobileDevice()
 
--- Remove old GUI
-if CoreGui:FindFirstChild("Aikoware") then
-	CoreGui.Aikoware:Destroy()
-end
+----------------------------------------------------------------
+-- CLEAN OLD GUI
+----------------------------------------------------------------
+pcall(function()
+	if CoreGui:FindFirstChild("Aikoware") then
+		CoreGui.Aikoware:Destroy()
+	end
+end)
 
--- Theme
+----------------------------------------------------------------
+-- THEME
+----------------------------------------------------------------
 local Theme = {
 	BG = Color3.fromRGB(15,17,21),
 	Panel = Color3.fromRGB(26,30,36),
@@ -26,7 +45,9 @@ local Theme = {
 	Accent = Color3.fromRGB(79,139,255)
 }
 
--- GUI size (LOCKED)
+----------------------------------------------------------------
+-- GUI SIZE (LOCKED - USER REQUEST)
+----------------------------------------------------------------
 local function responsiveSize()
 	if isMobile then
 		return UDim2.new(0.62, 0, 0.82, 0)
@@ -35,13 +56,17 @@ local function responsiveSize()
 	end
 end
 
--- ScreenGui
+----------------------------------------------------------------
+-- SCREEN GUI
+----------------------------------------------------------------
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "Aikoware"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = CoreGui
 
--- Main
+----------------------------------------------------------------
+-- MAIN FRAME
+----------------------------------------------------------------
 local Main = Instance.new("Frame")
 Main.Parent = ScreenGui
 Main.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -52,8 +77,12 @@ Main.ClipsDescendants = true
 Main.ZIndex = 1
 Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 18)
 
--- Drag (mobile)
-local dragging, dragStart, startPos
+----------------------------------------------------------------
+-- DRAG (MOBILE)
+----------------------------------------------------------------
+local dragging = false
+local dragStart, startPos
+
 Main.InputBegan:Connect(function(i)
 	if i.UserInputType == Enum.UserInputType.Touch then
 		dragging = true
@@ -80,7 +109,9 @@ UserInputService.InputEnded:Connect(function(i)
 	end
 end)
 
--- Header
+----------------------------------------------------------------
+-- HEADER
+----------------------------------------------------------------
 local Header = Instance.new("Frame", Main)
 Header.Position = UDim2.new(0,16,0,14)
 Header.Size = UDim2.new(1,-32,0,56)
@@ -97,7 +128,9 @@ Title.Size = UDim2.new(1,0,1,0)
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.ZIndex = 2
 
--- Tab Bar
+----------------------------------------------------------------
+-- TAB BAR (SCROLLABLE & RAW SAFE)
+----------------------------------------------------------------
 local TabBar = Instance.new("ScrollingFrame", Main)
 TabBar.Position = UDim2.new(0,16,0,78)
 TabBar.Size = UDim2.new(1,-32,0,46)
@@ -110,10 +143,12 @@ Instance.new("UICorner", TabBar).CornerRadius = UDim.new(0,14)
 local TabLayout = Instance.new("UIListLayout", TabBar)
 TabLayout.FillDirection = Enum.FillDirection.Horizontal
 TabLayout.Padding = UDim.new(0,14)
-TabLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
 TabLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+TabLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
 
--- Pages
+----------------------------------------------------------------
+-- PAGES
+----------------------------------------------------------------
 local Pages = Instance.new("Frame", Main)
 Pages.Position = UDim2.new(0,16,0,132)
 Pages.Size = UDim2.new(1,-32,1,-148)
@@ -140,7 +175,6 @@ local function createTab(name)
 	b.TextColor3 = Theme.SubText
 	b.BackgroundTransparency = 1
 	b.ZIndex = 11
-
 	tabButtons[name] = b
 
 	b.MouseButton1Click:Connect(function()
@@ -157,19 +191,32 @@ local function createPage(name)
 	pageList[name] = p
 end
 
--- Tabs
-for _,name in ipairs({
-	"Home","Fishing","Shop","Auto Fav","Teleport","Trade","Webhook"
-}) do
+----------------------------------------------------------------
+-- CREATE TABS
+----------------------------------------------------------------
+local tabs = {
+	"Home",
+	"Fishing",
+	"Shop",
+	"Auto Fav",
+	"Teleport",
+	"Trade",
+	"Webhook"
+}
+
+for _,name in ipairs(tabs) do
 	createTab(name)
 	createPage(name)
 end
 
 setActive("Fishing")
 
--- Simple content helper
+----------------------------------------------------------------
+-- CONTENT HELPER
+----------------------------------------------------------------
 local function label(parent,text,y)
-	local l = Instance.new("TextLabel", parent)
+	local l = Instance.new("TextLabel")
+	l.Parent = parent
 	l.Text = text
 	l.Font = Enum.Font.Gotham
 	l.TextSize = 18
@@ -180,10 +227,18 @@ local function label(parent,text,y)
 	l.TextXAlignment = Enum.TextXAlignment.Left
 end
 
-label(pageList.Home,"Home Page",10)
-label(pageList.Fishing,"Fishing Page",10)
-label(pageList.Shop,"Shop Page",10)
-label(pageList["Auto Fav"],"Auto Favorite Page",10)
-label(pageList.Teleport,"Teleport Page",10)
-label(pageList.Trade,"Trade Page",10)
-label(pageList.Webhook,"Webhook Page",10)
+----------------------------------------------------------------
+-- PAGE CONTENT (PLACEHOLDER)
+----------------------------------------------------------------
+label(pageList.Home, "Home Page", 10)
+label(pageList.Fishing, "Fishing Page", 10)
+label(pageList.Shop, "Shop Page", 10)
+label(pageList["Auto Fav"], "Auto Favorite Page", 10)
+label(pageList.Teleport, "Teleport Page", 10)
+label(pageList.Trade, "Trade Page", 10)
+label(pageList.Webhook, "Webhook Page", 10)
+
+----------------------------------------------------------------
+-- END
+----------------------------------------------------------------
+end)
