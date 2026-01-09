@@ -1,196 +1,194 @@
---// JriikTools V1
---// Final Stable UI + Safe Auto Size (Mobile Friendly)
+local ScreenGui = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local UICorner = Instance.new("UICorner")
+local Title = Instance.new("TextLabel")
+local Version = Instance.new("TextLabel")
+local TabContainer = Instance.new("ScrollingFrame")
+local UIListLayout = Instance.new("UIListLayout")local ContentFrame = Instance.new("Frame")
+local LeftColumn = Instance.new("ScrollingFrame")
+local RightColumn = Instance.new("ScrollingFrame")
 
--- Services
-local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
-local StarterGui = game:GetService("StarterGui")
+-- Properties
+ScreenGui.Parent = game.CoreGui
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
-local player = Players.LocalPlayer
-local camera = workspace.CurrentCamera
-local viewport = camera.ViewportSize
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+MainFrame.Position = UDim2.new(0.5, -250, 0.5, -150)
+MainFrame.Size = UDim2.new(0, 500, 0, 350)
+MainFrame.Active = true
+MainFrame.Draggable = true
 
--- Notification
-local function notify(text)
-	pcall(function()
-		StarterGui:SetCore("SendNotification", {
-			Title = "Console",
-			Text = text,
-			Icon = "rbxthumb://type=Asset&id=5107182114&w=150&h=150",
-			Duration = 5
-		})
-	end)
-end
+UICorner.CornerRadius = UDim.new(0, 10)
+UICorner.Parent = MainFrame
 
-notify("JriikTools V1 Loaded")
+Title.Parent = MainFrameTitle.Text = "Aikoware"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 24
+Title.Font = Enum.Font.GothamBold
+Title.Position = UDim2.new(0, 20, 0, 15)
+Title.Size = UDim2.new(0, 100, 0, 30)
+Title.TextXAlignment = Enum.TextXAlignment.Left
 
--- === DEVICE DETECTION ===
-local function isMobileDevice()
-	return UserInputService.TouchEnabled
-		and not UserInputService.KeyboardEnabled
-		and not UserInputService.MouseEnabled
-end
-
-local isMobile = isMobileDevice()
-
--- === SAFE AUTO SIZE (REQUESTED) ===
-local function safeSize(pxWidth, pxHeight)
-	local scaleX = pxWidth / viewport.X
-	local scaleY = pxHeight / viewport.Y
-
-	if isMobile then
-		scaleX = math.clamp(scaleX, 0, 0.5)
-		scaleY = math.clamp(scaleY, 0, 0.35)
-	end
-
-	return UDim2.new(scaleX, pxWidth * 0.1, scaleY, pxHeight * 0.1)
-end
-
--- ScreenGui
-local gui = Instance.new("ScreenGui")
-gui.Name = "JriikTools_V1"
-gui.ResetOnSpawn = false
-gui.Parent = player:WaitForChild("PlayerGui")
-
--- Main Frame
-local main = Instance.new("Frame")
-main.Parent = gui
-main.Size = safeSize(360, 320)
-main.Position = UDim2.new(0.5, 0, 0.5, 0)
-main.AnchorPoint = Vector2.new(0.5, 0.5)
-main.BackgroundColor3 = Color3.fromRGB(32,32,32)
-main.BorderSizePixel = 0
-
--- Header (Drag)
-local header = Instance.new("TextLabel")
-header.Parent = main
-header.Size = UDim2.new(1, 0, 0, 40)
-header.BackgroundColor3 = Color3.fromRGB(24,24,24)
-header.BorderSizePixel = 0
-header.Text = "JriikTools V1"
-header.TextColor3 = Color3.fromRGB(255,255,255)
-header.TextScaled = true
-
--- Drag Logic
-local dragging, dragStart, startPos
-header.InputBegan:Connect(function(i)
-	if i.UserInputType == Enum.UserInputType.Touch
-	or i.UserInputType == Enum.UserInputType.MouseButton1 then
-		dragging = true
-		dragStart = i.Position
-		startPos = main.Position
-	end
-end)
-
-header.InputEnded:Connect(function(i)
-	if i.UserInputType == Enum.UserInputType.Touch
-	or i.UserInputType == Enum.UserInputType.MouseButton1 then
-		dragging = false
-	end
-end)
-
-UserInputService.InputChanged:Connect(function(i)
-	if dragging and (
-		i.UserInputType == Enum.UserInputType.Touch
-		or i.UserInputType == Enum.UserInputType.MouseMovement
-	) then
-		local delta = i.Position - dragStart
-		main.Position = UDim2.new(
-			startPos.X.Scale,
-			startPos.X.Offset + delta.X,
-			startPos.Y.Scale,
-			startPos.Y.Offset + delta.Y
-		)
-	end
-end)
+Version.Parent = MainFrame
+Version.Text = "v1"
+Version.TextColor3 = Color3.fromRGB(150, 150, 150)
+Version.TextSize = 14
+Version.Font = Enum.Font.GothamVersion.Position = UDim2.new(1, -40, 0, 15)
+Version.Size = UDim2.new(0, 20, 0, 30)
 
 -- Tab Bar
-local tabBar = Instance.new("Frame")
-tabBar.Parent = main
-tabBar.Position = UDim2.new(0, 0, 0, 40)
-tabBar.Size = UDim2.new(1, 0, 0, 36)
-tabBar.BackgroundColor3 = Color3.fromRGB(25,25,25)
-tabBar.BorderSizePixel = 0
+TabContainer.Parent = MainFrame
+TabContainer.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+TabContainer.Position = UDim2.new(0, 10, 0, 60)
+TabContainer.Size = UDim2.new(1, -20, 0, 35)
+TabContainer.ScrollBarThickness = 0
+TabContainer.CanvasSize = UDim2.new(1.5, 0, 0, 0)
 
-local tabLayout = Instance.new("UIListLayout")
-tabLayout.Parent = tabBar
-tabLayout.FillDirection = Enum.FillDirection.Horizontal
-tabLayout.Padding = UDim.new(0, 4)
+local TabCorner = Instance.new("UICorner")
+TabCorner.CornerRadius = UDim.new(0, 6)
+TabCorner.Parent = TabContainer
 
--- Pages Holder
-local pages = Instance.new("Frame")
-pages.Parent = main
-pages.Position = UDim2.new(0, 0, 0, 76)
-pages.Size = UDim2.new(1, 0, 1, -76)
-pages.BackgroundTransparency = 1
+UIListLayout.Parent = TabContainer
+UIListLayout.FillDirection = Enum.FillDirection.Horizontal
+UIListLayout.Padding = UDim.new(0, 10)
+UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Center
 
--- Pages
-local pageList = {}
-
-local function createPage(name)
-	local page = Instance.new("Frame")
-	page.Parent = pages
-	page.Size = UDim2.new(1, 0, 1, 0)
-	page.Visible = false
-	page.BackgroundTransparency = 1
-	pageList[name] = page
-	return page
+-- Function to create Tabs
+local function CreateTab(name, icon)
+    local Tab = Instance.new("TextButton")
+    Tab.Parent = TabContainer
+    Tab.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    Tab.BackgroundTransparency = 1
+    Tab.Size = UDim2.new(0, 80, 1, 0)
+    Tab.Font = Enum.Font.Gotham
+    Tab.Text = name
+    Tab.TextColor3 = (name == "Fishing") and Color3.fromRGB(100, 150, 255) or Color3.fromRGB(180, 180, 180)
+    Tab.TextSize = 12
+    return Tab
 end
 
-local function createTab(name)
-	local btn = Instance.new("TextButton")
-	btn.Parent = tabBar
-	btn.Size = UDim2.new(0, 95, 1, 0)
-	btn.BackgroundColor3 = Color3.fromRGB(45,45,45)
-	btn.BorderSizePixel = 0
-	btn.Text = name
-	btn.TextColor3 = Color3.fromRGB(220,220,220)
-	btn.TextScaled = true
+CreateTab("Home")
+CreateTab("Fishing")
+CreateTab("Shop")
+CreateTab("Auto Favorite")
+CreateTab("Teleport")
+CreateTab("Trade")
+CreateTab("Webhook")
 
-	btn.MouseButton1Click:Connect(function()
-		for _,p in pairs(pageList) do
-			p.Visible = false
-		end
-		pageList[name].Visible = true
-		notify("Tab: "..name)
-	end)
+-- Content Layout
+ContentFrame.Parent = MainFrame
+ContentFrame.Position = UDim2.new(0, 10, 0, 105)
+ContentFrame.Size = UDim2.new(1, -20, 1, -115)
+ContentFrame.BackgroundTransparency = 1
+
+LeftColumn.Parent = ContentFrame
+LeftColumn.Size = UDim2.new(0.48, 0, 1, 0)
+LeftColumn.BackgroundTransparency = 1
+LeftColumn.ScrollBarThickness = 0
+
+RightColumn.Parent = ContentFrame
+RightColumn.Position = UDim2.new(0.52, 0, 0, 0)
+RightColumn.Size = UDim2.new(0.48, 0, 1, 0)
+RightColumn.BackgroundTransparency = 1
+RightColumn.ScrollBarThickness = 0
+
+local function AddSection(parent, text)
+    local Label = Instance.new("TextLabel")
+    Label.Parent = parent
+    Label.Text = text
+    Label.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Label.Font = Enum.Font.GothamBold
+    Label.TextSize = 14
+    Label.Size = UDim2.new(1, 0, 0, 25)
+    Label.TextXAlignment = Enum.TextXAlignment.Left
+    Label.BackgroundTransparency = 1
 end
 
--- Create Pages
-createPage("Info")
-createPage("Fishing")
-createPage("Shop")
-createPage("AutoQuest")
-createPage("Teleport")
-createPage("Misc")
+local function AddToggle(parent, text, default)
+    local Frame = Instance.new("Frame")
+    Frame.Parent = parent
+    Frame.Size = UDim2.new(1, 0, 0, 30)
+    Frame.BackgroundTransparency = 1
+    
+    local Label = Instance.new("TextLabel")
+    Label.Parent = Frame
+    Label.Text = text
+    Label.TextColor3 = Color3.fromRGB(200, 200, 200)    Label.Font = Enum.Font.Gotham
+    Label.TextSize = 13
+    Label.Size = UDim2.new(0.7, 0, 1, 0)
+    Label.BackgroundTransparency = 1
+    Label.TextXAlignment = Enum.TextXAlignment.Left
 
--- Create Tabs
-createTab("Info")
-createTab("Fishing")
-createTab("Shop")
-createTab("AutoQuest")
-createTab("Teleport")
-createTab("Misc")
-
-pageList.Info.Visible = true
-
--- Label Helper
-local function label(parent, text)
-	local l = Instance.new("TextLabel")
-	l.Parent = parent
-	l.Size = UDim2.new(1, -20, 0, 30)
-	l.Position = UDim2.new(0, 10, 0, 10)
-	l.BackgroundTransparency = 1
-	l.Text = text
-	l.TextColor3 = Color3.fromRGB(255,255,255)
-	l.TextXAlignment = Enum.TextXAlignment.Left
-	l.TextScaled = true
+    local Toggle = Instance.new("TextButton")
+    Toggle.Parent = Frame
+    Toggle.Position = UDim2.new(1, -35, 0.5, -8)
+    Toggle.Size = UDim2.new(0, 30, 0, 16)
+    Toggle.BackgroundColor3 = default and Color3.fromRGB(60, 120, 255) or Color3.fromRGB(50, 50, 50)
+    Toggle.Text = ""
+    local TCorner = Instance.new("UICorner")
+    TCorner.CornerRadius = UDim.new(1, 0)
+    TCorner.Parent = Toggle
 end
 
--- Content
-label(pageList.Info, "Welcome to JriikTools V1")
-label(pageList.Fishing, "Fishing features here")
-label(pageList.Shop, "Shop features here")
-label(pageList.AutoQuest, "AutoQuest features here")
-label(pageList.Teleport, "Teleport features here")
-label(pageList.Misc, "Misc features here")
+local function AddInput(parent, text, value)
+    local Frame = Instance.new("Frame")
+    Frame.Parent = parent
+    Frame.Size = UDim2.new(1, 0, 0, 30)
+    Frame.BackgroundTransparency = 1
+    
+    local Label = Instance.new("TextLabel")
+    Label.Parent = Frame
+    Label.Text = text
+    Label.TextColor3 = Color3.fromRGB(200, 200, 200)
+    Label.Font = Enum.Font.Gotham
+    Label.TextSize = 13
+    Label.Size = UDim2.new(0.6, 0, 1, 0)
+    Label.BackgroundTransparency = 1
+    Label.TextXAlignment = Enum.TextXAlignment.Left
+
+    local Box = Instance.new("TextBox")
+    Box.Parent = Frame
+    Box.Position = UDim2.new(1, -50, 0.5, -10)    Box.Size = UDim2.new(0, 50, 0, 20)
+    Box.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    Box.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Box.Text = value
+    Box.Font = Enum.Font.Gotham
+    Box.TextSize = 12
+    local BCorner = Instance.new("UICorner")
+    BCorner.CornerRadius = UDim.new(0, 4)
+    BCorner.Parent = Box
+end
+
+-- Populate Left Column
+local LList = Instance.new("UIListLayout", LeftColumn)
+LList.Padding = UDim.new(0, 5)
+
+AddSection(LeftColumn, "Legit")
+AddToggle(LeftColumn, "Legit Fishing", true)
+local FixBtn = Instance.new("TextButton", LeftColumn)
+FixBtn.Size = UDim2.new(1, 0, 0, 30)
+FixBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+FixBtn.Text = "Manual Fix Stuck"
+FixBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
+FixBtn.Font = Enum.Font.Gotham
+Instance.new("UICorner", FixBtn).CornerRadius = UDim.new(0, 5)
+
+AddSection(LeftColumn, "Instant")
+AddToggle(LeftColumn, "Instant Fishing", false)
+AddInput(LeftColumn, "Complete Delay", "0.5")
+AddInput(LeftColumn, "Fishing Delay", "0.15")
+AddInput(LeftColumn, "Reel Delay", "0.1")
+
+-- Populate Right Column
+local RList = Instance.new("UIListLayout", RightColumn)RList.Padding = UDim.new(0, 5)
+
+AddSection(RightColumn, "Instant")
+AddToggle(RightColumn, "Instant Fishing", false)
+AddInput(RightColumn, "Complete Delay", "0.5")
+
+AddSection(RightColumn, "Auto Fish Misc")
+AddToggle(RightColumn, "Disable Fish Notification", false)
+AddToggle(RightColumn, "Disable Animations", false)
+AddToggle(RightColumn, "Freeze Character", false)
