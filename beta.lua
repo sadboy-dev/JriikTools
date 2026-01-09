@@ -1,4 +1,4 @@
---// Aikoware UI - RAW SAFE FINAL (Delta Mobile)
+--// QU33N UI - RAW SAFE FINAL (Delta Mobile)
 --// Can be loaded via: loadstring(game:HttpGet(RAW_URL))()
 
 ----------------------------------------------------------------
@@ -29,8 +29,8 @@ local isMobile = isMobileDevice()
 -- CLEAN OLD GUI
 ----------------------------------------------------------------
 pcall(function()
-	if CoreGui:FindFirstChild("Aikoware") then
-		CoreGui.Aikoware:Destroy()
+	if CoreGui:FindFirstChild("QU33N") then
+		CoreGui.QU33N:Destroy()
 	end
 end)
 
@@ -60,7 +60,7 @@ end
 -- SCREEN GUI
 ----------------------------------------------------------------
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "Aikoware"
+ScreenGui.Name = "QU33N"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = CoreGui
 
@@ -119,7 +119,7 @@ Header.BackgroundTransparency = 1
 Header.ZIndex = 2
 
 local Title = Instance.new("TextLabel", Header)
-Title.Text = "Aikoware"
+Title.Text = "QU33N"
 Title.Font = Enum.Font.GothamBold
 Title.TextSize = 30
 Title.TextColor3 = Theme.Text
@@ -195,13 +195,12 @@ end
 -- CREATE TABS
 ----------------------------------------------------------------
 local tabs = {
-	"Home",
+	"Info",
 	"Fishing",
 	"Shop",
-	"Auto Fav",
+	"AutoQuest",
 	"Teleport",
-	"Trade",
-	"Webhook"
+	"Misc"
 }
 
 for _,name in ipairs(tabs) do
@@ -209,7 +208,7 @@ for _,name in ipairs(tabs) do
 	createPage(name)
 end
 
-setActive("Fishing")
+setActive("Info")
 
 ----------------------------------------------------------------
 -- CONTENT HELPER
@@ -230,13 +229,12 @@ end
 ----------------------------------------------------------------
 -- PAGE CONTENT (PLACEHOLDER)
 ----------------------------------------------------------------
-label(pageList.Home, "Home Page", 10)
-label(pageList.Fishing, "Fishing Page", 10)
-label(pageList.Shop, "Shop Page", 10)
-label(pageList["Auto Fav"], "Auto Favorite Page", 10)
-label(pageList.Teleport, "Teleport Page", 10)
-label(pageList.Trade, "Trade Page", 10)
-label(pageList.Webhook, "Webhook Page", 10)
+label(pageList.Info, "Welcome to QU33N", 10)
+label(pageList.Fishing, "Fishing features here", 10)
+label(pageList.Shop, "Shop features here", 10)
+label(pageList.AutoQuest, "AutoQuest features here", 10)
+label(pageList.Teleport, "Teleport features here", 10)
+label(pageList.Misc, "Misc features here", 10)
 
 ----------------------------------------------------------------
 -- END
