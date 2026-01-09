@@ -155,7 +155,7 @@ Instance.new("UICorner", TabBar).CornerRadius = UDim.new(0,14)
 
 local TabLayout = Instance.new("UIListLayout", TabBar)
 TabLayout.FillDirection = Enum.FillDirection.Horizontal
-TabLayout.Padding = UDim.new(0,6) -- rapatkan tab
+TabLayout.Padding = UDim.new(0,2) -- lebih rapat
 TabLayout.VerticalAlignment = Enum.VerticalAlignment.Center
 TabLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
 
@@ -182,13 +182,15 @@ end
 local function createTab(name)
 	local b = Instance.new("TextButton")
 	b.Parent = TabBar
-	b.Size = UDim2.new(0,80,1,0) -- sedikit lebih kecil supaya muat semua tab
+	b.Size = UDim2.new(0,80,0,36) -- lebih rendah
+	b.Position = UDim2.new(0,0,0.5,-18) -- vertikal center
 	b.Text = name
 	b.Font = Enum.Font.GothamMedium
 	b.TextSize = 15
 	b.TextColor3 = Theme.SubText
-	b.BackgroundTransparency = 1
+	b.BackgroundColor3 = Theme.Panel
 	b.ZIndex = 11
+	Instance.new("UICorner", b).CornerRadius = UDim.new(0,8)
 	tabButtons[name] = b
 
 	b.MouseButton1Click:Connect(function()
