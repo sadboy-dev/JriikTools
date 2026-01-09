@@ -1,182 +1,203 @@
---// SERVICES
-local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
+--// QU33N UI v2 FINAL FIXED – Semua Tab Muncul
+--// Delta Mobile Compatible
+
+repeat task.wait() until game:IsLoaded()
+task.wait(1)
+
+task.spawn(function()
+local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
+local CoreGui = game:GetService("CoreGui")
+local StarterGui = game:GetService("StarterGui")
 
-local Player = Players.LocalPlayer
-local PlayerGui = Player:WaitForChild("PlayerGui")
+-- Notification
+local function notify(text)
+	pcall(function()
+		StarterGui:SetCore("SendNotification", {
+			Title = "QU33N",
+			Text = text,
+			Icon = "rbxthumb://type=Asset&id=5107182114&w=150&h=150",
+			Duration = 5
+		})
+	end)
+end
 
---// MAIN UI
+-- Device detection
+local function isMobileDevice()
+	return UserInputService.TouchEnabled
+		and not UserInputService.KeyboardEnabled
+		and not UserInputService.MouseEnabled
+end
+local isMobile = isMobileDevice()
+
+-- Clean old GUI
+if CoreGui:FindFirstChild("QU33N") then
+	CoreGui.QU33N:Destroy()
+end
+
+-- Theme
+local Theme = {
+	BG = Color3.fromRGB(15,17,21),
+	Panel = Color3.fromRGB(26,30,36),
+	Text = Color3.fromRGB(235,235,235),
+	SubText = Color3.fromRGB(155,160,166),
+	Accent = Color3.fromRGB(79,139,255)
+}
+
+-- GUI size
+local function responsiveSize()
+	if isMobile then
+		return UDim2.new(0.62, 0, 0.82, 0)
+	else
+		return UDim2.new(0.30, 0, 0.72, 0)
+	end
+end
+
+-- ScreenGui
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "JriikTools"
+ScreenGui.Name = "QU33N"
 ScreenGui.ResetOnSpawn = false
-ScreenGui.Parent = PlayerGui
+ScreenGui.Parent = CoreGui
 
-local MainFrame = Instance.new("Frame")
-MainFrame.Parent = ScreenGui
-MainFrame.Size = UDim2.new(0, 520, 0, 360)
-MainFrame.Position = UDim2.new(0.5, -260, 0.5, -180)
-MainFrame.BackgroundColor3 = Color3.fromRGB(15,15,15)
-MainFrame.BorderSizePixel = 0
+-- Main frame
+local Main = Instance.new("Frame")
+Main.Parent = ScreenGui
+Main.AnchorPoint = Vector2.new(0.5,0.5)
+Main.Position = UDim2.new(0.5,0,0.52,0)
+Main.Size = responsiveSize()
+Main.BackgroundColor3 = Theme.BG
+Main.ClipsDescendants = true
+Instance.new("UICorner", Main).CornerRadius = UDim.new(0,18)
 
-local MainCorner = Instance.new("UICorner", MainFrame)
-MainCorner.CornerRadius = UDim.new(0, 14)
-
---// TITLE
-local Title = Instance.new("TextLabel", MainFrame)
-Title.Size = UDim2.new(1, -20, 0, 32)
-Title.Position = UDim2.new(0, 10, 0, 8)
-Title.Text = "Jriik Tools"
-Title.Font = Enum.Font.GothamBold
-Title.TextSize = 16
-Title.TextColor3 = Color3.fromRGB(230,230,230)
-Title.BackgroundTransparency = 1
-Title.TextXAlignment = Enum.TextXAlignment.Left
-
---////////////////////////////////////////////////////
---// TAB BAR (FIXED VERSION)
---////////////////////////////////////////////////////
-
-local TabBar = Instance.new("Frame", MainFrame)
-TabBar.Size = UDim2.new(1, -32, 0, 40)
-TabBar.Position = UDim2.new(0, 16, 0, 48)
-TabBar.BackgroundColor3 = Color3.fromRGB(18,18,18)
-TabBar.BorderSizePixel = 0
-TabBar.Name = "TabBar"
-
-local TabCorner = Instance.new("UICorner", TabBar)
-TabCorner.CornerRadius = UDim.new(0, 12)
-
---// SCROLLING CONTAINER (FIX UTAMA)
-local TabsContainer = Instance.new("ScrollingFrame", TabBar)
-TabsContainer.Size = UDim2.new(1, -16, 1, 0)
-TabsContainer.Position = UDim2.new(0, 8, 0, 0)
-TabsContainer.CanvasSize = UDim2.new(0,0,0,0)
-TabsContainer.ScrollBarImageTransparency = 1
-TabsContainer.ScrollingDirection = Enum.ScrollingDirection.X
-TabsContainer.BackgroundTransparency = 1
-TabsContainer.BorderSizePixel = 0
-TabsContainer.Name = "TabsContainer"
-
-local TabLayout = Instance.new("UIListLayout", TabsContainer)
-TabLayout.FillDirection = Enum.FillDirection.Horizontal
-TabLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-TabLayout.Padding = UDim.new(0, 6)
-
--- AUTO CANVAS SIZE (INI KUNCI TAB TIDAK KEPOTONG)
-TabLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-    TabsContainer.CanvasSize = UDim2.new(
-        0,
-        TabLayout.AbsoluteContentSize.X + 12,
-        0,
-        0
-    )
+-- Drag
+local dragging, dragStart, startPos
+Main.InputBegan:Connect(function(i)
+	if i.UserInputType == Enum.UserInputType.Touch then
+		dragging = true
+		dragStart = i.Position
+		startPos = Main.Position
+	end
+end)
+UserInputService.InputChanged:Connect(function(i)
+	if dragging and i.UserInputType == Enum.UserInputType.Touch then
+		local delta = i.Position - dragStart
+		Main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X,
+								  startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+	end
+end)
+UserInputService.InputEnded:Connect(function(i)
+	if i.UserInputType == Enum.UserInputType.Touch then
+		dragging = false
+	end
 end)
 
---////////////////////////////////////////////////////
---// CONTENT AREA
---////////////////////////////////////////////////////
+-- Header
+local Header = Instance.new("Frame", Main)
+Header.Position = UDim2.new(0,16,0,6)
+Header.Size = UDim2.new(1,-32,0,50)
+Header.BackgroundTransparency = 1
 
-local ContentFrame = Instance.new("Frame", MainFrame)
-ContentFrame.Size = UDim2.new(1, -32, 1, -104)
-ContentFrame.Position = UDim2.new(0, 16, 0, 96)
-ContentFrame.BackgroundColor3 = Color3.fromRGB(20,20,20)
-ContentFrame.BorderSizePixel = 0
+local Title = Instance.new("TextLabel", Header)
+Title.Text = "QU33N"
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 18
+Title.TextColor3 = Theme.Text
+Title.BackgroundTransparency = 1
+Title.Size = UDim2.new(1,0,1,0)
+Title.TextXAlignment = Enum.TextXAlignment.Left
 
-local ContentCorner = Instance.new("UICorner", ContentFrame)
-ContentCorner.CornerRadius = UDim.new(0, 12)
+-- Tabs
+local TabBar = Instance.new("Frame", Main)
+TabBar.Position = UDim2.new(0,16,0,58)
+TabBar.Size = UDim2.new(1,-32,0,36)
+TabBar.BackgroundTransparency = 1
 
---////////////////////////////////////////////////////
---// TAB SYSTEM (ASLI KAMU – TIDAK DIUBAH)
---////////////////////////////////////////////////////
+local TabsContainer = Instance.new("Frame", TabBar)
+TabsContainer.Size = UDim2.new(1,0,1,0)
+TabsContainer.BackgroundTransparency = 1
 
-local Tabs = {}
-local CurrentTab = nil
+-- UIListLayout untuk tab
+local TabLayout = Instance.new("UIListLayout", TabsContainer)
+TabLayout.FillDirection = Enum.FillDirection.Horizontal
+TabLayout.Padding = UDim.new(0,3)
+TabLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+TabLayout.VerticalAlignment = Enum.VerticalAlignment.Center
 
-local function CreateTab(name)
-    local b = Instance.new("TextButton")
-    b.Parent = TabsContainer
-    b.Text = name
-    b.Font = Enum.Font.GothamMedium
-    b.TextSize = 13
-    b.TextColor3 = Color3.fromRGB(220,220,220)
-    b.BackgroundColor3 = Color3.fromRGB(28,28,28)
-    b.BorderSizePixel = 0
-    b.AutoButtonColor = false
+-- Pages
+local Pages = Instance.new("Frame", Main)
+Pages.Position = UDim2.new(0,16,0,104)
+Pages.Size = UDim2.new(1,-32,1,-120)
+Pages.BackgroundTransparency = 1
 
-    -- FIX SIZE TAB (AUTO WIDTH)
-    b.Size = UDim2.new(0,0,1,-6)
-    b.AutomaticSize = Enum.AutomaticSize.X
+local pageList = {}
+local tabButtons = {}
 
-    local pad = Instance.new("UIPadding", b)
-    pad.PaddingLeft = UDim.new(0, 12)
-    pad.PaddingRight = UDim.new(0, 12)
-
-    local corner = Instance.new("UICorner", b)
-    corner.CornerRadius = UDim.new(0, 8)
-
-    -- CONTENT FRAME TAB
-    local page = Instance.new("Frame", ContentFrame)
-    page.Size = UDim2.new(1,0,1,0)
-    page.BackgroundTransparency = 1
-    page.Visible = false
-
-    b.MouseButton1Click:Connect(function()
-        if CurrentTab then
-            CurrentTab.Button.BackgroundColor3 = Color3.fromRGB(28,28,28)
-            CurrentTab.Page.Visible = false
-        end
-
-        CurrentTab = {
-            Button = b,
-            Page = page
-        }
-
-        b.BackgroundColor3 = Color3.fromRGB(45,45,45)
-        page.Visible = true
-    end)
-
-    table.insert(Tabs, {Button = b, Page = page})
-
-    -- AUTO SELECT TAB PERTAMA
-    if not CurrentTab then
-        task.wait()
-        b:Activate()
-    end
-
-    return page
+local function setActive(tabName)
+	for name,btn in pairs(tabButtons) do
+		btn.TextColor3 = (name == tabName) and Theme.Accent or Theme.SubText
+		pageList[name].Visible = (name == tabName)
+	end
+	notify("Tab: "..tabName)
 end
 
---////////////////////////////////////////////////////
---// TABS (ASLI KAMU)
---////////////////////////////////////////////////////
+local function createTab(name)
+	local b = Instance.new("TextButton")
+	b.Parent = TabsContainer
+	b.BackgroundColor3 = Theme.Panel
+	b.Text = name
+	b.Font = Enum.Font.Gotham
+	b.TextSize = 14
+	b.TextColor3 = Theme.SubText
+	b.BorderSizePixel = 0
+	b.AutoButtonColor = true
+	Instance.new("UICorner", b).CornerRadius = UDim.new(0,8)
+	b.Size = UDim2.new(0,78,1,0)
+	tabButtons[name] = b
 
-local InfoTab = CreateTab("Info")
-local FishingTab = CreateTab("Fishing")
-local ShopTab = CreateTab("Shop")
-local AutoTab = CreateTab("Auto")
-local TeleportTab = CreateTab("Teleport")
-local MiscTab = CreateTab("Misc")
-
---////////////////////////////////////////////////////
---// CONTOH ISI TAB (BIAR TIDAK KOSONG)
---////////////////////////////////////////////////////
-
-local function MakeLabel(parent, text)
-    local lbl = Instance.new("TextLabel", parent)
-    lbl.Size = UDim2.new(1, -20, 0, 30)
-    lbl.Position = UDim2.new(0, 10, 0, 10)
-    lbl.Text = text
-    lbl.Font = Enum.Font.Gotham
-    lbl.TextSize = 14
-    lbl.TextColor3 = Color3.fromRGB(200,200,200)
-    lbl.BackgroundTransparency = 1
-    lbl.TextXAlignment = Enum.TextXAlignment.Left
+	b.MouseButton1Click:Connect(function()
+		setActive(name)
+	end)
 end
 
-MakeLabel(InfoTab, "Info Tab")
-MakeLabel(FishingTab, "Fishing Tab")
-MakeLabel(ShopTab, "Shop Tab")
-MakeLabel(AutoTab, "Auto Tab")
-MakeLabel(TeleportTab, "Teleport Tab")
-MakeLabel(MiscTab, "Misc Tab")
+local function createPage(name)
+	local p = Instance.new("Frame", Pages)
+	p.Size = UDim2.new(1,0,1,0)
+	p.BackgroundTransparency = 1
+	p.Visible = false
+	pageList[name] = p
+end
+
+-- Create tabs & pages
+local tabs = {"Info","Fishing","Shop","AutoQuest","Teleport","Misc"}
+for _,name in ipairs(tabs) do
+	createTab(name)
+	createPage(name)
+end
+
+-- Force UIListLayout update after render
+RunService.Heartbeat:Wait()
+setActive("Info")
+
+-- Page content
+local function label(parent,text,y)
+	local l = Instance.new("TextLabel")
+	l.Parent = parent
+	l.Text = text
+	l.Font = Enum.Font.Gotham
+	l.TextSize = 18
+	l.TextColor3 = Theme.Text
+	l.BackgroundTransparency = 1
+	l.Position = UDim2.new(0,0,0,y)
+	l.Size = UDim2.new(1,0,0,30)
+	l.TextXAlignment = Enum.TextXAlignment.Left
+end
+
+label(pageList.Info, "Welcome to QU33N", 10)
+label(pageList.Fishing, "Fishing features here", 10)
+label(pageList.Shop, "Shop features here", 10)
+label(pageList.AutoQuest, "AutoQuest features here", 10)
+label(pageList.Teleport, "Teleport features here", 10)
+label(pageList.Misc, "Misc features here", 10)
+
+notify("QU33N Loaded Successfully!")
+end)
