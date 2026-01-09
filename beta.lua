@@ -136,7 +136,7 @@ Header.ZIndex = 2
 local Title = Instance.new("TextLabel", Header)
 Title.Text = "QU33N"
 Title.Font = Enum.Font.GothamBold
-Title.TextSize = 30
+Title.TextSize = 18
 Title.TextColor3 = Theme.Text
 Title.BackgroundTransparency = 1
 Title.Size = UDim2.new(1,0,1,0)
@@ -147,7 +147,7 @@ Title.ZIndex = 2
 -- TAB BAR (SCROLLABLE)
 ----------------------------------------------------------------
 local TabBar = Instance.new("ScrollingFrame", Main)
-TabBar.Position = UDim2.new(0,16,0,78)
+TabBar.Position = UDim2.new(0,16,0,60)
 TabBar.Size = UDim2.new(1,-32,0,46)
 TabBar.CanvasSize = UDim2.new(0,0,0,0)
 TabBar.ScrollBarThickness = 0
